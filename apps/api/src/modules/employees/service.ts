@@ -1,4 +1,7 @@
-import type { EmployeeDirectoryQuery } from '@acme/contracts';
+import type {
+  EmployeeDirectoryQuery,
+  SalaryHistoryQuery,
+} from '@acme/contracts';
 import { Prisma, type PrismaClient } from '../../generated/prisma/client.js';
 
 const salarySelect = {
@@ -35,6 +38,62 @@ function serializeEmployee(
 
 export function createEmployeeService(db: PrismaClient) {
   return {
+    async detail(employeeId: string) {
+      const employee = await db.employee.findUnique({
+        where: { id: employeeId },
+        select: employeeSelect,
+      });
+      return employee ? { data: serializeEmployee(employee) } : null;
+    },
+
+    async salaryHistory(employeeId: string, query: SalaryHistoryQuery) {
+      return db.$transaction(
+        async (transaction) => {
+          const employee = await transaction.employee.findUnique({
+            where: { id: employeeId },
+            select: { id: true },
+          });
+          if (!employee) return null;
+          const where = { employeeId };
+          const [totalItems, changes] = await Promise.all([
+            transaction.salaryChange.count({ where }),
+            transaction.salaryChange.findMany({
+              where,
+              orderBy: [{ recordedAt: 'desc' }, { id: 'desc' }],
+              skip: (query.page - 1) * query.pageSize,
+              take: query.pageSize,
+              select: {
+                id: true,
+                kind: true,
+                previousAmount: true,
+                newAmount: true,
+                currencyCode: true,
+                reason: true,
+                salaryVersion: true,
+                recordedAt: true,
+                changedBy: { select: { id: true, email: true } },
+              },
+            }),
+          ]);
+          return {
+            data: changes.map((change) => ({
+              ...change,
+              previousAmount: change.previousAmount?.toFixed(2) ?? null,
+              newAmount: change.newAmount.toFixed(2),
+              recordedAt: change.recordedAt.toISOString(),
+            })),
+            pagination: {
+              page: query.page,
+              pageSize: query.pageSize,
+              totalItems,
+              totalPages: Math.ceil(totalItems / query.pageSize),
+            },
+          };
+        },
+        { isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead },
+      );
+    },
+
     async list(query: EmployeeDirectoryQuery) {
       const where: Prisma.EmployeeWhereInput = {
         salary: query.currencyCode

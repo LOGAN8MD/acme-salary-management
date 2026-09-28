@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { useSearchParams } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import type { Employee, EmployeeDirectoryQuery } from '@acme/contracts';
 import { DataTable, type TableColumn } from '../../components/DataTable';
 import { FormField } from '../../components/FormField';
@@ -36,7 +36,13 @@ const columns: TableColumn<Employee>[] = [
     label: 'Employee',
     render: (employee) => (
       <Stack spacing={0.25}>
-        <Typography sx={{ fontWeight: 600 }}>{employee.name}</Typography>
+        <Typography
+          component={Link}
+          to={`/employees/${employee.id}`}
+          sx={{ color: 'primary.main', fontWeight: 600 }}
+        >
+          {employee.name}
+        </Typography>
         <Typography variant="body2" color="text.secondary">
           {employee.employeeCode} · {employee.email}
         </Typography>

@@ -99,6 +99,32 @@ export const employeeFilterOptionsResponseSchema = z.strictObject({
     currencyCodes: z.array(z.string().length(3)),
   }),
 });
+export const employeeIdSchema = z.uuid();
+export const employeeDetailResponseSchema = z.strictObject({
+  data: employeeSchema,
+});
+export const salaryHistoryQuerySchema = z.strictObject({
+  page: queryInteger(1),
+  pageSize: queryInteger(25, 100),
+});
+export const salaryChangeSchema = z.strictObject({
+  id: z.uuid(),
+  kind: z.enum(['INITIAL', 'REVISION']),
+  previousAmount: z
+    .string()
+    .regex(/^\d+(?:\.\d{2})?$/)
+    .nullable(),
+  newAmount: z.string().regex(/^\d+(?:\.\d{2})?$/),
+  currencyCode: z.string().length(3),
+  reason: z.string(),
+  changedBy: z.strictObject({ id: z.uuid(), email: z.email() }).nullable(),
+  salaryVersion: z.number().int().positive(),
+  recordedAt: z.iso.datetime(),
+});
+export const salaryHistoryResponseSchema = z.strictObject({
+  data: z.array(salaryChangeSchema),
+  pagination: paginationSchema,
+});
 export type EmployeeDirectoryQuery = z.infer<
   typeof employeeDirectoryQuerySchema
 >;
@@ -106,3 +132,5 @@ export type Employee = z.infer<typeof employeeSchema>;
 export type EmployeeFilterOptions = z.infer<
   typeof employeeFilterOptionsResponseSchema
 >['data'];
+export type SalaryHistoryQuery = z.infer<typeof salaryHistoryQuerySchema>;
+export type SalaryChange = z.infer<typeof salaryChangeSchema>;

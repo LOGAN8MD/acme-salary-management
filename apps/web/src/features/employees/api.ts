@@ -1,7 +1,9 @@
 import {
   employeeDirectoryQuerySchema,
   employeeDirectoryResponseSchema,
+  employeeDetailResponseSchema,
   employeeFilterOptionsResponseSchema,
+  salaryHistoryResponseSchema,
   type EmployeeDirectoryQuery,
 } from '@acme/contracts';
 
@@ -56,4 +58,21 @@ export async function fetchEmployeeFilterOptions() {
   return employeeFilterOptionsResponseSchema.parse(
     await request('/filter-options'),
   ).data;
+}
+export async function fetchEmployee(employeeId: string) {
+  return employeeDetailResponseSchema.parse(await request(`/${employeeId}`))
+    .data;
+}
+export async function fetchSalaryHistory(
+  employeeId: string,
+  page: number,
+  pageSize = 10,
+) {
+  const params = new URLSearchParams({
+    page: String(page),
+    pageSize: String(pageSize),
+  });
+  return salaryHistoryResponseSchema.parse(
+    await request(`/${employeeId}/salary-history?${params.toString()}`),
+  );
 }

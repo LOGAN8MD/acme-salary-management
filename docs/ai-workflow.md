@@ -53,3 +53,11 @@ User instruction: `implement task 7`.
 Codex translated the approved API contract into shared Zod query/response schemas, an authenticated Prisma service/router, and a URL-backed React directory. Count and page retrieval use one repeatable-read transaction; sorting is allowlisted with an ID tie-breaker, and salary sorting requires one currency. The UI uses server pagination, retains prior page data during transitions, formats stored currencies without conversion, and exposes loading, empty, and retry states.
 
 TypeScript and ESLint identified exact-optional-property and effect-driven state issues; conditional props and a URL-keyed content boundary resolved them. The first database run correctly exposed an obsolete Task 5 expectation that authenticated employee routes returned 404; it was updated to assert the now-implemented empty directory while preserving report-route protection. Final verification passed the standard test suite and 24 disposable PostgreSQL tests. Browser review confirmed all 10,000 seeded employees, pagination, salary formatting, and search for a specific employee code.
+
+## Task 8 — Employee detail and salary history
+
+User instruction: `implement task 8`.
+
+Codex extended the shared contracts and existing employee module rather than creating a separate service boundary. The API validates UUIDs and pagination, distinguishes malformed and missing employees, serializes exact decimal values, and reads history count plus rows in a repeatable-read transaction. The protected React route presents profile data, current salary version, and a newest-first history table with clear initialization labels.
+
+The implementation kept salary mutation out of this milestone so validation, concurrency, and atomic audit writes remain one cohesive Task 9 change. Component verification caught a locale-specific currency expectation; the assertion was aligned with the test runtime while retaining currency-format coverage. Database tests cover detail lookup, revision actors, history pagination/order, invalid IDs, and missing employees.

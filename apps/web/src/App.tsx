@@ -11,6 +11,7 @@ import {
   EmployeesPage,
   NotFoundPage,
 } from './pages/WorkspacePages';
+import { EmployeeDetail } from './features/employees/EmployeeDetail';
 
 function SessionGate() {
   const session = useSession();
@@ -81,6 +82,7 @@ export function App() {
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/employees" element={<EmployeesPage />} />
+            <Route path="/employees/:employeeId" element={<EmployeeDetail />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Route>

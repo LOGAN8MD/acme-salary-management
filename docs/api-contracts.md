@@ -222,4 +222,4 @@ Do not paginate the bounded seed-owned grouping dimensions. Compute all report s
 
 ## Contract verification during implementation
 
-Cover authentication/CSRF failures, malformed inputs, decimal precision and bounds, empty/past-end pagination, unknown employees, consistent filter definitions, deterministic ordering, unchanged/stale salary writes, rollback, and currency-isolated reporting. Test known odd/even-count medians and empty datasets. These are planned checks, not tests already implemented or executed.
+Implemented checks now cover authentication/CSRF failures, malformed directory/detail/history inputs, empty/past-end pagination, unknown employees, filter definitions, and deterministic directory/history ordering. Salary-write checks for decimal precision, unchanged/stale updates, and rollback remain part of Task 9. Currency-isolated report and odd/even median checks remain part of the reporting task.
