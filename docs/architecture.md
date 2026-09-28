@@ -23,15 +23,15 @@ The production Node service serves the built React assets and `/api/v1` routes. 
 
 ## Technology decisions
 
-| Area | Proposed choice | Reason / trade-off |
-| --- | --- | --- |
-| Backend | Node.js, TypeScript, Express | Small HTTP layer; keep business rules independently testable |
-| Frontend | React, TypeScript, Vite | Client-rendered internal tool; server rendering is unnecessary |
-| UI | Material UI | Consistent accessible form and table primitives; verify final keyboard behavior |
-| Remote state | TanStack Query | Fetching, loading/error states, and invalidation after salary changes |
-| Validation | Zod in a shared contracts package | Reuse input rules; server remains authoritative |
-| Storage | PostgreSQL and Prisma migrations | Exact decimals, relational constraints, transactions, and typed access; more setup than SQLite but a natural managed-deployment path |
-| Tests | Vitest, React Testing Library, Supertest, Playwright | Unit, component, API integration, and a small set of browser journeys |
+| Area         | Proposed choice                                      | Reason / trade-off                                                                                                                   |
+| ------------ | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Backend      | Node.js, TypeScript, Express                         | Small HTTP layer; keep business rules independently testable                                                                         |
+| Frontend     | React, TypeScript, Vite                              | Client-rendered internal tool; server rendering is unnecessary                                                                       |
+| UI           | Material UI                                          | Consistent accessible form and table primitives; verify final keyboard behavior                                                      |
+| Remote state | TanStack Query                                       | Fetching, loading/error states, and invalidation after salary changes                                                                |
+| Validation   | Zod in a shared contracts package                    | Reuse input rules; server remains authoritative                                                                                      |
+| Storage      | PostgreSQL and Prisma migrations                     | Exact decimals, relational constraints, transactions, and typed access; more setup than SQLite but a natural managed-deployment path |
+| Tests        | Vitest, React Testing Library, Supertest, Playwright | Unit, component, API integration, and a small set of browser journeys                                                                |
 
 Keep database models private to the server. Explicit response DTOs prevent accidental exposure of hashes, sessions, or internal fields. Avoid generic repositories or dependency-injection frameworks until a concrete need appears.
 
@@ -67,13 +67,13 @@ Each API module separates HTTP handlers, service logic, and database queries whe
 
 All entity IDs are UUIDs, timestamps are UTC `timestamptz`, and foreign keys use restrictive deletion behavior. No delete endpoints are planned.
 
-| Table | Important fields and constraints |
-| --- | --- |
-| `hr_users` | `id` PK, normalized `email` unique, `password_hash`, `created_at` |
-| `sessions` | `id` PK, `token_hash` unique, nullable `user_id` FK (anonymous CSRF bootstrap), `csrf_token_hash`, `expires_at`, `created_at` |
-| `employees` | `id` PK, `employee_code` unique, `name`, `email` unique, two-letter `country_code`, `department`, `job_level`, `created_at` |
-| `current_salaries` | `employee_id` PK/FK, `annual_base_amount NUMERIC(18,2)`, `currency_code`, positive integer `version`, `updated_at` |
-| `salary_changes` | `id` PK, `employee_id` FK, `kind` (`INITIAL` / `REVISION`), nullable `previous_amount`, `new_amount`, `currency_code`, `reason`, nullable `changed_by_user_id` FK, `salary_version`, `recorded_at`; unique `(employee_id, salary_version)` |
+| Table              | Important fields and constraints                                                                                                                                                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `hr_users`         | `id` PK, normalized `email` unique, `password_hash`, `created_at`                                                                                                                                                                          |
+| `sessions`         | `id` PK, `token_hash` unique, nullable `user_id` FK (anonymous CSRF bootstrap), `csrf_token_hash`, `expires_at`, `created_at`                                                                                                              |
+| `employees`        | `id` PK, `employee_code` unique, `name`, `email` unique, two-letter `country_code`, `department`, `job_level`, `created_at`                                                                                                                |
+| `current_salaries` | `employee_id` PK/FK, `annual_base_amount NUMERIC(18,2)`, `currency_code`, positive integer `version`, `updated_at`                                                                                                                         |
+| `salary_changes`   | `id` PK, `employee_id` FK, `kind` (`INITIAL` / `REVISION`), nullable `previous_amount`, `new_amount`, `currency_code`, `reason`, nullable `changed_by_user_id` FK, `salary_version`, `recorded_at`; unique `(employee_id, salary_version)` |
 
 ```mermaid
 erDiagram

@@ -6,19 +6,19 @@ Base path: `/api/v1`. Requests and responses use JSON except `204` responses. ID
 
 ## Endpoint inventory
 
-| Endpoint (relative to base path) | Method | Purpose | Used by | Authentication |
-| --- | --- | --- | --- | --- |
-| `/health` | GET | Application/database readiness | Hosting health check | Public |
-| `/auth/csrf` | GET | Obtain session-bound CSRF token | Login and authenticated UI initialization | Public; creates anonymous session if needed |
-| `/auth/login` | POST | Authenticate and rotate session | Login screen | Anonymous session + CSRF |
-| `/auth/me` | GET | Read signed-in HR user | Protected routes/header | Required |
-| `/auth/logout` | POST | Revoke session | Header | Required + CSRF |
-| `/employees/filter-options` | GET | Read available countries, departments, levels, and currencies | Directory/dashboard | Required |
-| `/employees` | GET | Search, filter, sort, paginate employees | Directory | Required |
-| `/employees/:employeeId` | GET | Read employee and current salary | Employee detail | Required |
-| `/employees/:employeeId/salary-history` | GET | Read paginated history | Employee detail | Required |
-| `/employees/:employeeId/salary` | PATCH | Change salary and append history atomically | Salary form | Required + CSRF |
-| `/reports/salaries` | GET | Read employee counts and currency-specific summary/breakdown | Dashboard | Required |
+| Endpoint (relative to base path)        | Method | Purpose                                                       | Used by                                   | Authentication                              |
+| --------------------------------------- | ------ | ------------------------------------------------------------- | ----------------------------------------- | ------------------------------------------- |
+| `/health`                               | GET    | Application/database readiness                                | Hosting health check                      | Public                                      |
+| `/auth/csrf`                            | GET    | Obtain session-bound CSRF token                               | Login and authenticated UI initialization | Public; creates anonymous session if needed |
+| `/auth/login`                           | POST   | Authenticate and rotate session                               | Login screen                              | Anonymous session + CSRF                    |
+| `/auth/me`                              | GET    | Read signed-in HR user                                        | Protected routes/header                   | Required                                    |
+| `/auth/logout`                          | POST   | Revoke session                                                | Header                                    | Required + CSRF                             |
+| `/employees/filter-options`             | GET    | Read available countries, departments, levels, and currencies | Directory/dashboard                       | Required                                    |
+| `/employees`                            | GET    | Search, filter, sort, paginate employees                      | Directory                                 | Required                                    |
+| `/employees/:employeeId`                | GET    | Read employee and current salary                              | Employee detail                           | Required                                    |
+| `/employees/:employeeId/salary-history` | GET    | Read paginated history                                        | Employee detail                           | Required                                    |
+| `/employees/:employeeId/salary`         | PATCH  | Change salary and append history atomically                   | Salary form                               | Required + CSRF                             |
+| `/reports/salaries`                     | GET    | Read employee counts and currency-specific summary/breakdown  | Dashboard                                 | Required                                    |
 
 All authenticated responses use `Cache-Control: no-store`. Mutations require `X-CSRF-Token`. There are no employee CRUD, currency-edit, history-edit, or history-delete endpoints.
 
@@ -29,7 +29,9 @@ All authenticated responses use `Cache-Control: no-store`. Mutations require `X-
   "error": {
     "code": "VALIDATION_ERROR",
     "message": "Check the supplied values.",
-    "details": [{ "field": "annualBaseAmount", "message": "Must be positive." }],
+    "details": [
+      { "field": "annualBaseAmount", "message": "Must be positive." }
+    ],
     "requestId": "request-identifier"
   }
 }
@@ -37,18 +39,18 @@ All authenticated responses use `Cache-Control: no-store`. Mutations require `X-
 
 `details` is optional and intended for validation errors. Never expose stack traces, SQL, hashes, tokens, or credentials.
 
-| HTTP status | Code | Meaning |
-| --- | --- | --- |
-| 400 | `VALIDATION_ERROR` | Malformed JSON, IDs, query parameters, or invalid fields |
-| 401 | `UNAUTHENTICATED` | Missing/expired authenticated session |
-| 401 | `INVALID_CREDENTIALS` | Login failed; same response for unknown email and wrong password |
-| 403 | `CSRF_INVALID` | Missing/invalid token or rejected origin |
-| 404 | `EMPLOYEE_NOT_FOUND` | Well-formed employee ID does not exist |
-| 409 | `SALARY_VERSION_CONFLICT` | Employee salary changed since it was loaded |
-| 422 | `SALARY_UNCHANGED` | Submitted amount equals current amount after decimal normalization |
-| 429 | `RATE_LIMITED` | Too many login attempts; include `Retry-After` |
-| 500 | `INTERNAL_ERROR` | Unexpected failure; no partial salary update persists |
-| 503 | `NOT_READY` | Health check cannot reach the database |
+| HTTP status | Code                      | Meaning                                                            |
+| ----------- | ------------------------- | ------------------------------------------------------------------ |
+| 400         | `VALIDATION_ERROR`        | Malformed JSON, IDs, query parameters, or invalid fields           |
+| 401         | `UNAUTHENTICATED`         | Missing/expired authenticated session                              |
+| 401         | `INVALID_CREDENTIALS`     | Login failed; same response for unknown email and wrong password   |
+| 403         | `CSRF_INVALID`            | Missing/invalid token or rejected origin                           |
+| 404         | `EMPLOYEE_NOT_FOUND`      | Well-formed employee ID does not exist                             |
+| 409         | `SALARY_VERSION_CONFLICT` | Employee salary changed since it was loaded                        |
+| 422         | `SALARY_UNCHANGED`        | Submitted amount equals current amount after decimal normalization |
+| 429         | `RATE_LIMITED`            | Too many login attempts; include `Retry-After`                     |
+| 500         | `INTERNAL_ERROR`          | Unexpected failure; no partial salary update persists              |
+| 503         | `NOT_READY`               | Health check cannot reach the database                             |
 
 ## Health and authentication
 
@@ -59,13 +61,22 @@ All authenticated responses use `Cache-Control: no-store`. Mutations require `X-
 `POST /auth/login` body:
 
 ```json
-{"email":"hr@example.test","password":"user-entered-password"}
+{ "email": "hr@example.test", "password": "user-entered-password" }
 ```
 
 Validate email and nonempty password; return `200` with the following shape and a rotated session cookie/token:
 
 ```json
-{"data":{"user":{"id":"00000000-0000-4000-8000-000000000001","email":"hr@example.test","role":"HR_MANAGER"},"csrfToken":"new-opaque-token"}}
+{
+  "data": {
+    "user": {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "email": "hr@example.test",
+      "role": "HR_MANAGER"
+    },
+    "csrfToken": "new-opaque-token"
+  }
+}
 ```
 
 `GET /auth/me` → `200 {"data":{"user":{...}}}` with the same user shape. `POST /auth/logout` has no body, returns `204`, and clears/revokes the session. A later `/auth/me` returns `401`. UI initialization can fetch `/auth/csrf` again after reload. Cookie lifetime and security are specified in [architecture](architecture.md).
@@ -98,17 +109,17 @@ The directory and detail endpoint share this shape:
 
 `GET /employees` query parameters:
 
-| Parameter | Rule / default |
-| --- | --- |
-| `search` | Optional trimmed text, maximum 100 characters; literal case-insensitive substring match on name or employee code; blank means no search |
-| `countryCode` | Optional exact supported country code |
-| `department` | Optional exact canonical department |
-| `jobLevel` | Optional exact canonical level |
-| `currencyCode` | Optional supported currency |
-| `page` | Integer ≥ 1; default 1 |
-| `pageSize` | Integer 1–100; default 25 |
-| `sortBy` | `name`, `employeeCode`, or `annualBaseAmount`; default `name`; amount sorting requires `currencyCode` |
-| `sortOrder` | `asc` or `desc`; default `asc` |
+| Parameter      | Rule / default                                                                                                                          |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `search`       | Optional trimmed text, maximum 100 characters; literal case-insensitive substring match on name or employee code; blank means no search |
+| `countryCode`  | Optional exact supported country code                                                                                                   |
+| `department`   | Optional exact canonical department                                                                                                     |
+| `jobLevel`     | Optional exact canonical level                                                                                                          |
+| `currencyCode` | Optional supported currency                                                                                                             |
+| `page`         | Integer ≥ 1; default 1                                                                                                                  |
+| `pageSize`     | Integer 1–100; default 25                                                                                                               |
+| `sortBy`       | `name`, `employeeCode`, or `annualBaseAmount`; default `name`; amount sorting requires `currencyCode`                                   |
+| `sortOrder`    | `asc` or `desc`; default `asc`                                                                                                          |
 
 Filters combine with AND. Search treats `%` and `_` as literal characters. Use a stable ascending ID tie-breaker and parameterized/allowlisted queries. A page past the last result returns an empty array, not an error.
 
@@ -117,7 +128,14 @@ Response: `200 {"data":[Employee],"pagination":{"page":1,"pageSize":25,"totalIte
 `GET /employees/filter-options` → `200`:
 
 ```json
-{"data":{"countryCodes":["GB","IN","JP","US"],"departments":["Engineering","Finance"],"jobLevels":["L1","L2","L3"],"currencyCodes":["EUR","GBP","INR","JPY","USD"]}}
+{
+  "data": {
+    "countryCodes": ["GB", "IN", "JP", "US"],
+    "departments": ["Engineering", "Finance"],
+    "jobLevels": ["L1", "L2", "L3"],
+    "currencyCodes": ["EUR", "GBP", "INR", "JPY", "USD"]
+  }
+}
 ```
 
 Return sorted distinct values from the complete dataset; options do not cascade with current filters. Values above illustrate the response shape, not an exhaustive seed specification.
@@ -134,7 +152,10 @@ Return sorted distinct values from the complete dataset; options do not cascade 
   "newAmount": "1800000.00",
   "currencyCode": "INR",
   "reason": "Annual salary review",
-  "changedBy": {"id":"00000000-0000-4000-8000-000000000001","email":"hr@example.test"},
+  "changedBy": {
+    "id": "00000000-0000-4000-8000-000000000001",
+    "email": "hr@example.test"
+  },
   "salaryVersion": 2,
   "recordedAt": "2026-09-01T10:00:00.000Z"
 }
@@ -147,7 +168,11 @@ Return sorted distinct values from the complete dataset; options do not cascade 
 `PATCH /employees/:employeeId/salary` body:
 
 ```json
-{"annualBaseAmount":"1900000.00","reason":"Promotion to expanded responsibilities","expectedVersion":2}
+{
+  "annualBaseAmount": "1900000.00",
+  "reason": "Promotion to expanded responsibilities",
+  "expectedVersion": 2
+}
 ```
 
 - Amount must be a positive plain decimal string within the database bounds, with no excess fractional digits for the employee's stored currency. Whole amounts such as `"1900000"` are allowed and normalized in the response. Reject negative/zero values, commas, exponents, currency symbols, and JSON numbers.
@@ -170,7 +195,7 @@ Illustrative response:
   "data": {
     "currencyCode": "INR",
     "groupBy": "department",
-    "filters": {"countryCode":null,"department":null,"jobLevel":null},
+    "filters": { "countryCode": null, "department": null, "jobLevel": null },
     "matchingEmployeeCountAllCurrencies": 10,
     "summary": {
       "employeeCount": 2,
