@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../apps/api/src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum SalaryChangeKind {
+  INITIAL
+  REVISION
+}
+
+model HrUser {
+  id           String         @id @default(uuid()) @db.Uuid
+  email        String         @unique @db.VarChar(254)
+  passwordHash String         @map("password_hash")
+  createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  sessions     Session[]
+  changes      SalaryChange[]
+  @@map("hr_users")
+}
+
+model Session {
+  id            String   @id @default(uuid()) @db.Uuid
+  tokenHash     String   @unique @map("token_hash")
+  userId        String?  @map("user_id") @db.Uuid
+  csrfTokenHash String   @map("csrf_token_hash")
+  expiresAt     DateTime @map("expires_at") @db.Timestamptz(3)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  user          HrUser?  @relation(fields: [userId], references: [id], onDelete: Restrict)
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model Employee {
+  id           String         @id @default(uuid()) @db.Uuid
+  employeeCode String         @unique @map("employee_code") @db.VarChar(32)
+  name         String         @db.VarChar(200)
+  email        String         @unique @db.VarChar(254)
+  countryCode  String         @map("country_code") @db.VarChar(2)
+  department   String         @db.VarChar(100)
+  jobLevel     String         @map("job_level") @db.VarChar(32)
+  createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  salary       CurrentSalary?
+  changes      SalaryChange[]
+  @@index([countryCode])
+  @@index([department])
+  @@index([jobLevel])
+  @@map("employees")
+}
+
+model CurrentSalary {
+  employeeId       String   @id @map("employee_id") @db.Uuid
+  annualBaseAmount Decimal  @map("annual_base_amount") @db.Decimal(18, 2)
+  currencyCode     String   @map("currency_code") @db.VarChar(3)
+  version          Int      @default(1)
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  employee         Employee @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  @@index([currencyCode])
+  @@map("current_salaries")
+}
+
+model SalaryChange {
+  id              String           @id @default(uuid()) @db.Uuid
+  employeeId      String           @map("employee_id") @db.Uuid
+  kind            SalaryChangeKind
+  previousAmount  Decimal?         @map("previous_amount") @db.Decimal(18, 2)
+  newAmount       Decimal          @map("new_amount") @db.Decimal(18, 2)
+  currencyCode    String           @map("currency_code") @db.VarChar(3)
+  reason          String           @db.VarChar(500)
+  changedByUserId String?          @map("changed_by_user_id") @db.Uuid
+  salaryVersion   Int              @map("salary_version")
+  recordedAt      DateTime         @default(now()) @map("recorded_at") @db.Timestamptz(3)
+  employee        Employee         @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  changedBy       HrUser?          @relation(fields: [changedByUserId], references: [id], onDelete: Restrict)
+  @@unique([employeeId, salaryVersion])
+  @@index([employeeId, recordedAt(sort: Desc), id(sort: Desc)])
+  @@index([changedByUserId])
+  @@map("salary_changes")
+}

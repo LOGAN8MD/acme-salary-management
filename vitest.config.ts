@@ -8,6 +8,7 @@ export default defineConfig({
           name: 'api',
           environment: 'node',
           include: ['apps/api/src/**/*.test.ts'],
+          exclude: ['**/*.db.test.ts'],
         },
       },
       {

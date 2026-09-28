@@ -19,7 +19,14 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build"
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build",
+    "db:generate": "node --env-file-if-exists=.env node_modules/prisma/build/index.js generate",
+    "db:validate": "node --env-file-if-exists=.env node_modules/prisma/build/index.js validate",
+    "db:migrate": "node --env-file-if-exists=.env node_modules/prisma/build/index.js migrate deploy",
+    "db:status": "node --env-file-if-exists=.env node_modules/prisma/build/index.js migrate status",
+    "db:local": "node scripts/database.mjs local",
+    "test:db": "npm run db:generate && node scripts/database.mjs test",
+    "postinstall": "npm run db:generate"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -27,13 +34,19 @@
     "@testing-library/react": "^16.3.3",
     "@types/node": "^26.6.3",
     "concurrently": "^10.0.5",
+    "embedded-postgres": "^18.4.0-beta.17",
     "eslint": "^10.11.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.12.0",
     "jsdom": "^29.1.1",
     "prettier": "^3.9.9",
+    "prisma": "7.10.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.70.1",
     "vitest": "^5.0.2"
+  },
+  "overrides": {
+    "deepmerge-ts": "8.0.2",
+    "mysql2": "3.24.4"
   }
 }

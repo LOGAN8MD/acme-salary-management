@@ -1,6 +1,6 @@
 # ACME Salary Management — Architecture
 
-**Date:** 2026-09-28 · **Status:** Task 1 design for review; nothing implemented.
+**Date:** 2026-09-28 · **Status:** Intended architecture; Tasks 1–3 now implemented to their respective scope. See project memory for current feature status.
 
 This document describes the intended implementation of [the requirements](requirements.md). [PROJECT_MEMORY.md](../PROJECT_MEMORY.md) records actual feature status, approvals, and history. [API contracts](api-contracts.md) define the initial HTTP interface. Approval to write these documents is not approval to implement later tasks.
 
