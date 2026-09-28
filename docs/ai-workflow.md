@@ -31,3 +31,9 @@ User instruction: `implement task 4`.
 Codex read memory/schema/database instructions and recorded the pending change before coding. It designed a fixed generator using reserved test emails, deterministic IDs/dates, and BigInt minor-unit arithmetic. The seed uses a single transaction and a lock to serialize invocations. Review focused on preserving evaluator salary/password changes, rejecting partial data, and separating deterministic data from randomized password salts. Node/OWASP documentation informed the scrypt parameters.
 
 Tests exercise the full 10,000-row dataset, coherent histories, two concurrent seed calls, a later salary edit, rejection of inconsistent/unrelated records, and injected failure rollback. Adding type checks for CLI/config files exposed an unsupported per-project Vitest option from Task 2, which was removed. No auth endpoints or UI were added. Local seeding and a no-op rerun were verified; final results are recorded in project memory.
+
+## Task 5 — Authentication
+
+User instruction: `implement task 5`; later `try again` authorized retrying verification after an automatic approval-review usage-limit failure.
+
+Codex implemented database-backed opaque sessions, seed-compatible password verification, CSRF/origin checks, cookie flags, request throttling, shared auth schemas, and a React login/session view. Test review caught a cache-clearing bug that detached the active auth observer; the fix preserves the auth query while clearing other cached data. All 21 database tests and 15 unit/API/component/contract tests passed after the fix. Browser verification confirmed local demo login, persistence after reload, and logout. The server was reused after detecting that development ports were already occupied by this project. Authentication behavior and single-instance rate-limit limitations are documented separately. No Task 6 navigation or business screens were implemented.

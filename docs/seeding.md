@@ -1,6 +1,6 @@
 # Synthetic assessment dataset
 
-Task 4 adds an explicit seed command. It does not add login, employee APIs, or salary editing UI.
+Task 4 added the explicit seed command. Task 5 now provides login; employee APIs and salary editing UI remain pending.
 
 ## Run locally
 
@@ -13,7 +13,7 @@ npm run db:seed
 
 The seed requires `DATABASE_URL` and `SEED_HR_PASSWORD` (12–128 characters). The example password is only for the synthetic local demo. For any hosted demo, set a private password through that environment's secret configuration before initial seeding.
 
-The demo account email is **hr@acme.example.test**. Its initial password is the configured `SEED_HR_PASSWORD`. Credentials are provisioned now; sign-in will be implemented in Task 5. The command prints record counts, status, and email, never the password or hash.
+The demo account email is **hr@acme.example.test**. Its initial password is the configured `SEED_HR_PASSWORD`. Use these credentials on the Task 5 login screen. The command prints record counts, status, and email, never the password or hash.
 
 ## Dataset
 
@@ -33,7 +33,7 @@ Amounts are synthetic examples, not market salary benchmarks. Names are generate
 
 Generation uses fixed pseudo-random input, deterministic UUID namespaces and dates, and integer minor-unit arithmetic with BigInt. Every revision references its previous amount, retains currency, increments the version, and advances the timestamp. Each current salary exactly matches its latest history entry. JPY uses whole units; other seeded currencies use two decimal places.
 
-The employee/salary/history dataset is reproducible. Password hashes intentionally differ across fresh databases because they use random salts. The demo password is stored using Node's scrypt with N=131072, r=8, p=1, a 16-byte random salt, and a 64-byte key. Format: `scrypt$N$r$p$saltHex$keyHex`. This follows the [OWASP scrypt guidance](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#scrypt) and [Node crypto API](https://nodejs.org/download/release/v24.21.0/docs/api/crypto.html). Verification for application login belongs to Task 5.
+The employee/salary/history dataset is reproducible. Password hashes intentionally differ across fresh databases because they use random salts. The demo password is stored using Node's scrypt with N=131072, r=8, p=1, a 16-byte random salt, and a 64-byte key. Format: `scrypt$N$r$p$saltHex$keyHex`. This follows the [OWASP scrypt guidance](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#scrypt) and [Node crypto API](https://nodejs.org/download/release/v24.21.0/docs/api/crypto.html). Task 5 verifies this format during login.
 
 ## Safe reruns
 

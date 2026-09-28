@@ -12,7 +12,7 @@
   },
   "scripts": {
     "dev": "concurrently -k -n api,web \"npm run dev -w @acme/api\" \"npm run dev -w @acme/web\"",
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build -w @acme/contracts && npm run build -w @acme/api && npm run build -w @acme/web",
     "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tsconfig.tools.json",
     "lint": "eslint .",
     "format": "prettier --write .",
@@ -26,8 +26,12 @@
     "db:status": "node --env-file-if-exists=.env node_modules/prisma/build/index.js migrate status",
     "db:local": "node scripts/database.mjs local",
     "test:db": "npm run db:generate && node scripts/database.mjs test",
-    "postinstall": "npm run db:generate",
-    "db:seed": "node --env-file-if-exists=.env --import tsx prisma/seed.ts"
+    "postinstall": "npm run db:generate && npm run build -w @acme/contracts",
+    "db:seed": "node --env-file-if-exists=.env --import tsx prisma/seed.ts",
+    "predev": "npm run build -w @acme/contracts",
+    "pretypecheck": "npm run build -w @acme/contracts",
+    "pretest": "npm run build -w @acme/contracts",
+    "pretest:db": "npm run build -w @acme/contracts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

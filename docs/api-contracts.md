@@ -1,6 +1,6 @@
 # ACME Salary Management — Initial API Contracts
 
-**Date:** 2026-09-28 · **Status:** Task 1 review draft; no endpoints implemented.
+**Date:** 2026-09-28 · **Status:** Authentication endpoints implemented in Task 5; remaining feature endpoints are planned. See project memory for current status.
 
 Base path: `/api/v1`. Requests and responses use JSON except `204` responses. IDs are UUID strings; timestamps use ISO 8601 UTC. Salary amounts are plain decimal strings, never JSON numbers or exponent notation. Employee currencies are server-owned. Unknown body fields and unsupported query values are rejected.
 
