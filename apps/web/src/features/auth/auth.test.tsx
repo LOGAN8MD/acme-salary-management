@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router';
 import { App } from '../../App';
 
 const user = {
@@ -20,7 +21,9 @@ function mount() {
   });
   render(
     <QueryClientProvider client={client}>
-      <App />
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
     </QueryClientProvider>,
   );
   return client;
@@ -29,10 +32,13 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe('HR sign-in screen', () => {
   it('restores an existing session without displaying the login form', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({ data: { user } })));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockImplementation(async () => json({ data: { user } })),
+    );
     mount();
     expect(
-      await screen.findByRole('heading', { name: 'You’re signed in' }),
+      await screen.findByRole('heading', { name: 'Dashboard' }),
     ).toBeInTheDocument();
     expect(screen.getByText(user.email)).toBeInTheDocument();
     expect(screen.queryByLabelText('Password')).not.toBeInTheDocument();
@@ -63,7 +69,7 @@ describe('HR sign-in screen', () => {
       target: { value: 'DemoPassword2026!' },
     });
     fireEvent.submit(screen.getByRole('form', { name: 'HR sign in' }));
-    await screen.findByRole('heading', { name: 'You’re signed in' });
+    await screen.findByRole('heading', { name: 'Dashboard' });
     fireEvent.click(screen.getByRole('button', { name: 'Sign out' }));
     await screen.findByRole('heading', { name: 'Sign in' });
     expect(client.getQueryData(['auth', 'me'])).toBeNull();

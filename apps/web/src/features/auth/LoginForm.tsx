@@ -1,8 +1,9 @@
 import { useState, type FormEvent } from 'react';
-import { Alert, Button, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Button, Stack, Typography } from '@mui/material';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { loginInputSchema } from '@acme/contracts';
 import { login } from './api';
+import { FormField } from '../../components/FormField';
 
 export function LoginForm() {
   const client = useQueryClient();
@@ -54,7 +55,7 @@ export function LoginForm() {
       {(validation || mutation.error) && (
         <Alert severity="error">{validation || mutation.error?.message}</Alert>
       )}
-      <TextField
+      <FormField
         label="Email address"
         name="email"
         type="email"
@@ -63,7 +64,7 @@ export function LoginForm() {
         fullWidth
         disabled={mutation.isPending}
       />
-      <TextField
+      <FormField
         label="Password"
         name="password"
         type="password"

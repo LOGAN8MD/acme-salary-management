@@ -37,3 +37,11 @@ Tests exercise the full 10,000-row dataset, coherent histories, two concurrent s
 User instruction: `implement task 5`; later `try again` authorized retrying verification after an automatic approval-review usage-limit failure.
 
 Codex implemented database-backed opaque sessions, seed-compatible password verification, CSRF/origin checks, cookie flags, request throttling, shared auth schemas, and a React login/session view. Test review caught a cache-clearing bug that detached the active auth observer; the fix preserves the auth query while clearing other cached data. All 21 database tests and 15 unit/API/component/contract tests passed after the fix. Browser verification confirmed local demo login, persistence after reload, and logout. The server was reused after detecting that development ports were already occupied by this project. Authentication behavior and single-instance rate-limit limitations are documented separately. No Task 6 navigation or business screens were implemented.
+
+## Task 6 — Application layout and protected navigation
+
+User instruction: `implement task 6`; later `try again` requested completion after the interrupted attempt.
+
+Codex added React Router routes, a shared session hook, protected-route handling, a responsive Material UI workspace, and reusable presentation components. The implementation constrains post-login return paths to known internal pages and clears feature-query data when the session becomes anonymous. Dashboard and Employees remain explicit placeholders so the UI does not imply unimplemented business behavior.
+
+Type checking found invalid responsive Stack props and component-test typing issues; both were corrected. A session test also exposed reuse of a consumed mock response, which was changed to return a fresh response per request. The final check passed 23 unit/API/component/contract tests, type checks, lint, formatting, and production builds. Manual browser verification covered direct protected access, post-login return, desktop navigation, mobile drawer behavior, reload persistence, and sign-out availability. Vite still reports the previously documented frontend chunk-size advisory; route-level splitting remains a later optimization.
