@@ -2,6 +2,7 @@ import { Button, Paper } from '@mui/material';
 import { Link } from 'react-router';
 import { PageHeader } from '../components/PageHeader';
 import { EmptyState } from '../components/Feedback';
+import { EmployeeDirectory } from '../features/employees/EmployeeDirectory';
 
 export function DashboardPage() {
   return (
@@ -25,20 +26,7 @@ export function DashboardPage() {
   );
 }
 export function EmployeesPage() {
-  return (
-    <>
-      <PageHeader
-        title="Employees"
-        description="Your employee salary directory."
-      />
-      <Paper variant="outlined">
-        <EmptyState
-          title="The employee directory is coming soon"
-          description="Employee search, filters, and salary details will be available here. This preview does not display employee records yet."
-        />
-      </Paper>
-    </>
-  );
+  return <EmployeeDirectory />;
 }
 export function NotFoundPage() {
   return (

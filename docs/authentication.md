@@ -1,6 +1,6 @@
 # HR authentication — Task 5
 
-Implemented: login/logout, session restoration, PostgreSQL-backed sessions, shared input/response contracts, CSRF/origin protection, and an accessible login form. The signed-in screen is a milestone placeholder; navigation and business screens remain later tasks.
+Implemented: login/logout, session restoration, PostgreSQL-backed sessions, shared input/response contracts, CSRF/origin protection, and an accessible login form. Protected navigation and the read-only employee directory now consume this authentication layer.
 
 ## Review locally
 
@@ -31,7 +31,7 @@ Review valid sign-in, an incorrect password, reload while signed in, and sign-ou
 | `GET /api/v1/auth/me`      | Return only ID, email, and HR_MANAGER role; return 401 for missing, invalid, anonymous, or expired sessions                               |
 | `POST /api/v1/auth/logout` | Require authentication/CSRF, delete the session, clear the cookie, return 204                                                             |
 
-All responses disable caching and use request IDs. Errors omit password hashes, tokens, stack traces, and database details. Unknown emails and wrong passwords receive the same message; unknown users still perform the same scrypt work. Unknown employee/report endpoints now return 401 when unauthenticated and 404 when authenticated because those handlers are not yet implemented. Future writes in those route groups are already guarded by CSRF middleware.
+All responses disable caching and use request IDs. Errors omit password hashes, tokens, stack traces, and database details. Unknown emails and wrong passwords receive the same message; unknown users still perform the same scrypt work. Employee/report routes return 401 when unauthenticated. The read-only employee directory is implemented; other unknown employee/report routes return 404 when authenticated. Future writes in those route groups are already guarded by CSRF middleware.
 
 ## Session and CSRF design
 
@@ -57,4 +57,4 @@ The design follows [OWASP CSRF guidance](https://cheatsheetseries.owasp.org/chea
 
 `npm run test:db` covers the real PostgreSQL auth lifecycle, rotation, hashed storage, restart persistence, expiry, generic credential failures, CSRF/origin rejection, production cookie flags, throttling, input errors, and protected route groups. `npm run check` covers shared contract validation, component interactions, existing unit/API tests, typing, lint, formatting, and builds. Manual browser checks verified login, reload restoration, and logout with the local demo account.
 
-No registration, password reset, SSO, additional roles, readiness endpoint, dashboard navigation, or employee/salary/report functionality was added. The production build currently emits a chunk-size advisory; review code splitting with the broader frontend work.
+Registration, password reset, SSO, additional roles, and a readiness endpoint remain out of scope. Salary updates and reporting are not yet implemented. The production build currently emits a chunk-size advisory; review code splitting with the broader frontend work.

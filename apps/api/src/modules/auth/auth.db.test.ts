@@ -217,15 +217,23 @@ describe('HR authentication', () => {
     expect(malformed.body.error.requestId).toBeTruthy();
     expect(malformed.text).not.toContain('SyntaxError');
   });
-  it('protects future business routes and mutation CSRF before route handlers', async () => {
+  it('protects business routes and mutation CSRF before route handlers', async () => {
     expect((await request(app).get('/api/v1/employees')).status).toBe(401);
     expect((await request(app).get('/api/v1/reports/salaries')).status).toBe(
       401,
     );
     const { login } = await signIn();
+    const directory = await request(app)
+      .get('/api/v1/employees')
+      .set('Cookie', cookie(login));
+    expect(directory.status).toBe(200);
+    expect(directory.body.pagination.totalItems).toBe(0);
     expect(
-      (await request(app).get('/api/v1/employees').set('Cookie', cookie(login)))
-        .status,
+      (
+        await request(app)
+          .get('/api/v1/reports/salaries')
+          .set('Cookie', cookie(login))
+      ).status,
     ).toBe(404);
     const blocked = await request(app)
       .patch('/api/v1/employees/example/salary')

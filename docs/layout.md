@@ -8,7 +8,7 @@ Task 6 adds the protected HR workspace around the existing authentication flow. 
 | -------------- | ---------- | -------------------------------------------------------------------------------------- |
 | `/login`       | Public     | Shows the sign-in form; an authenticated user is redirected to a safe workspace route. |
 | `/dashboard`   | HR manager | Shows the responsive workspace and a clearly labeled reporting placeholder.            |
-| `/employees`   | HR manager | Shows the responsive workspace and a clearly labeled employee-directory placeholder.   |
+| `/employees`   | HR manager | Shows the functional read-only employee directory added in Task 7.                     |
 | `/`            | HR manager | Redirects to `/dashboard`.                                                             |
 | Any other path | HR manager | Shows an in-app not-found page with a dashboard link.                                  |
 

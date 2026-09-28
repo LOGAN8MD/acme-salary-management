@@ -45,3 +45,11 @@ User instruction: `implement task 6`; later `try again` requested completion aft
 Codex added React Router routes, a shared session hook, protected-route handling, a responsive Material UI workspace, and reusable presentation components. The implementation constrains post-login return paths to known internal pages and clears feature-query data when the session becomes anonymous. Dashboard and Employees remain explicit placeholders so the UI does not imply unimplemented business behavior.
 
 Type checking found invalid responsive Stack props and component-test typing issues; both were corrected. A session test also exposed reuse of a consumed mock response, which was changed to return a fresh response per request. The final check passed 23 unit/API/component/contract tests, type checks, lint, formatting, and production builds. Manual browser verification covered direct protected access, post-login return, desktop navigation, mobile drawer behavior, reload persistence, and sign-out availability. Vite still reports the previously documented frontend chunk-size advisory; route-level splitting remains a later optimization.
+
+## Task 7 — Employee directory
+
+User instruction: `implement task 7`.
+
+Codex translated the approved API contract into shared Zod query/response schemas, an authenticated Prisma service/router, and a URL-backed React directory. Count and page retrieval use one repeatable-read transaction; sorting is allowlisted with an ID tie-breaker, and salary sorting requires one currency. The UI uses server pagination, retains prior page data during transitions, formats stored currencies without conversion, and exposes loading, empty, and retry states.
+
+TypeScript and ESLint identified exact-optional-property and effect-driven state issues; conditional props and a URL-keyed content boundary resolved them. The first database run correctly exposed an obsolete Task 5 expectation that authenticated employee routes returned 404; it was updated to assert the now-implemented empty directory while preserving report-route protection. Final verification passed the standard test suite and 24 disposable PostgreSQL tests. Browser review confirmed all 10,000 seeded employees, pagination, salary formatting, and search for a specific employee code.

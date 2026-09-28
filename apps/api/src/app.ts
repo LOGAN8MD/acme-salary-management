@@ -4,6 +4,8 @@ import type { PrismaClient } from './generated/prisma/client.js';
 import { createAuthService } from './modules/auth/service.js';
 import { createAuthHttp, type AuthConfig } from './modules/auth/http.js';
 import { errorHandler } from './middleware/errors.js';
+import { createEmployeeService } from './modules/employees/service.js';
+import { createEmployeeRouter } from './modules/employees/http.js';
 
 export function createApp(options?: {
   db: PrismaClient;
@@ -37,6 +39,10 @@ export function createApp(options?: {
       auth.loadSession,
       auth.requireUser,
       auth.protectMutation,
+    );
+    app.use(
+      '/api/v1/employees',
+      createEmployeeRouter(createEmployeeService(options.db)),
     );
   }
   app.use((_request, response) => {
