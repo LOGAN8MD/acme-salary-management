@@ -1,8 +1,10 @@
 import type {
   EmployeeDirectoryQuery,
   SalaryHistoryQuery,
+  SalaryUpdateInput,
 } from '@acme/contracts';
 import { Prisma, type PrismaClient } from '../../generated/prisma/client.js';
+import { HttpError } from '../../middleware/errors.js';
 
 const salarySelect = {
   annualBaseAmount: true,
@@ -36,7 +38,25 @@ function serializeEmployee(
   };
 }
 
-export function createEmployeeService(db: PrismaClient) {
+function serializeSalaryChange<
+  Change extends {
+    previousAmount: Prisma.Decimal | null;
+    newAmount: Prisma.Decimal;
+    recordedAt: Date;
+  },
+>(change: Change) {
+  return {
+    ...change,
+    previousAmount: change.previousAmount?.toFixed(2) ?? null,
+    newAmount: change.newAmount.toFixed(2),
+    recordedAt: change.recordedAt.toISOString(),
+  };
+}
+
+export function createEmployeeService(
+  db: PrismaClient,
+  now = () => new Date(),
+) {
   return {
     async detail(employeeId: string) {
       const employee = await db.employee.findUnique({
@@ -76,12 +96,7 @@ export function createEmployeeService(db: PrismaClient) {
             }),
           ]);
           return {
-            data: changes.map((change) => ({
-              ...change,
-              previousAmount: change.previousAmount?.toFixed(2) ?? null,
-              newAmount: change.newAmount.toFixed(2),
-              recordedAt: change.recordedAt.toISOString(),
-            })),
+            data: changes.map(serializeSalaryChange),
             pagination: {
               page: query.page,
               pageSize: query.pageSize,
@@ -92,6 +107,99 @@ export function createEmployeeService(db: PrismaClient) {
         },
         { isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead },
       );
+    },
+
+    async updateSalary(
+      employeeId: string,
+      actorId: string,
+      input: SalaryUpdateInput,
+    ) {
+      return db.$transaction(async (transaction) => {
+        const employee = await transaction.employee.findUnique({
+          where: { id: employeeId },
+          select: { salary: true },
+        });
+        if (!employee)
+          throw new HttpError(404, 'EMPLOYEE_NOT_FOUND', 'Employee not found.');
+        if (!employee.salary)
+          throw new Error(`Employee ${employeeId} has no current salary.`);
+        const current = employee.salary;
+        if (current.version !== input.expectedVersion)
+          throw new HttpError(
+            409,
+            'SALARY_VERSION_CONFLICT',
+            'The salary changed since this page was loaded. Review the latest value and try again.',
+          );
+        if (
+          current.currencyCode === 'JPY' &&
+          input.annualBaseAmount.includes('.')
+        )
+          throw new HttpError(
+            400,
+            'VALIDATION_ERROR',
+            'JPY salaries must use whole amounts.',
+          );
+        const nextAmount = new Prisma.Decimal(input.annualBaseAmount);
+        if (nextAmount.equals(current.annualBaseAmount))
+          throw new HttpError(
+            400,
+            'SALARY_UNCHANGED',
+            'Enter an amount different from the current salary.',
+          );
+        const recordedAt = now();
+        const updated = await transaction.currentSalary.updateMany({
+          where: { employeeId, version: input.expectedVersion },
+          data: {
+            annualBaseAmount: nextAmount,
+            version: { increment: 1 },
+            updatedAt: recordedAt,
+          },
+        });
+        if (updated.count !== 1)
+          throw new HttpError(
+            409,
+            'SALARY_VERSION_CONFLICT',
+            'The salary changed since this page was loaded. Review the latest value and try again.',
+          );
+        const salary = await transaction.currentSalary.findUniqueOrThrow({
+          where: { employeeId },
+          select: salarySelect,
+        });
+        const change = await transaction.salaryChange.create({
+          data: {
+            employeeId,
+            kind: 'REVISION',
+            previousAmount: current.annualBaseAmount,
+            newAmount: nextAmount,
+            currencyCode: current.currencyCode,
+            reason: input.reason,
+            changedByUserId: actorId,
+            salaryVersion: salary.version,
+            recordedAt,
+          },
+          select: {
+            id: true,
+            kind: true,
+            previousAmount: true,
+            newAmount: true,
+            currencyCode: true,
+            reason: true,
+            salaryVersion: true,
+            recordedAt: true,
+            changedBy: { select: { id: true, email: true } },
+          },
+        });
+        return {
+          data: {
+            salary: {
+              ...salary,
+              annualBaseAmount: salary.annualBaseAmount.toFixed(2),
+              updatedAt: salary.updatedAt.toISOString(),
+            },
+            change: serializeSalaryChange(change),
+          },
+        };
+      });
     },
 
     async list(query: EmployeeDirectoryQuery) {

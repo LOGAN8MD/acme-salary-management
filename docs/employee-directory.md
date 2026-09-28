@@ -12,7 +12,7 @@ Task 7 provides a read-only directory for the 10,000 seeded employees and their 
 - Filter options are sorted distinct values from the complete dataset and do not cascade.
 - Filters, sort, and page are encoded in the URL so a directory view can be refreshed, bookmarked, or shared within an authenticated session.
 
-The table formats each salary using its stored ISO currency. Employee names link to the read-only profile and salary-history page added in Task 8. There is no currency conversion or salary editing.
+The table formats each salary using its stored ISO currency. Employee names link to the profile and salary-history page; salary revisions are available from that page. There is no currency conversion.
 
 ## API
 

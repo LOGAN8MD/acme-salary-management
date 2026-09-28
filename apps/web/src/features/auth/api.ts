@@ -37,7 +37,7 @@ async function request(path: string, options?: RequestInit) {
   }
   return response.status === 204 ? null : (response.json() as Promise<unknown>);
 }
-async function csrfHeaders() {
+export async function csrfHeaders() {
   const { data } = csrfResponseSchema.parse(await request('/csrf'));
   return { 'Content-Type': 'application/json', 'X-CSRF-Token': data.csrfToken };
 }

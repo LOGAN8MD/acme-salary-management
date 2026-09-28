@@ -42,7 +42,7 @@ The employee/salary/history dataset is reproducible. Password hashes intentional
 - **Partial, unrelated, or inconsistent data:** stop with an error and change nothing. There is no reset, truncate, or automatic repair mode.
 - Concurrent seed commands serialize with a transaction-scoped advisory lock. Seeds are explicit commands and do not run at server/database startup.
 
-To create a fresh dataset later, point at a new empty database and apply migrations first. Do not delete an existing review database merely to rerun the seed. Employee and salary invariants for later application edits remain Task 9 responsibilities.
+To create a fresh dataset later, point at a new empty database and apply migrations first. Do not delete an existing review database merely to rerun the seed. Task 9 salary revisions preserve the same currency/version/history invariants after seeding.
 
 ## Verification
 

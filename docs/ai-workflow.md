@@ -61,3 +61,11 @@ User instruction: `implement task 8`.
 Codex extended the shared contracts and existing employee module rather than creating a separate service boundary. The API validates UUIDs and pagination, distinguishes malformed and missing employees, serializes exact decimal values, and reads history count plus rows in a repeatable-read transaction. The protected React route presents profile data, current salary version, and a newest-first history table with clear initialization labels.
 
 The implementation kept salary mutation out of this milestone so validation, concurrency, and atomic audit writes remain one cohesive Task 9 change. Component verification caught a locale-specific currency expectation; the assertion was aligned with the test runtime while retaining currency-format coverage. Database tests cover detail lookup, revision actors, history pagination/order, invalid IDs, and missing employees.
+
+## Task 9 — Transactional salary updates
+
+User instruction: `implement task 9`.
+
+Codex implemented strict shared mutation contracts, session-derived actor identity, CSRF-protected HTTP handling, and a conditional version update plus history insertion in one Prisma transaction. Validation uses the stored currency, preserves exact decimals, rejects unchanged values, and checks version conflicts before amount equality. The React form shows the version being changed, requires a reason, avoids mutation retries and optimistic success, refreshes affected queries, and distinguishes server rejection from an uncertain connection outcome.
+
+Tests exercise rejected representations, unknown fields, successful exact writes, actor attribution, stale-before-unchanged precedence, JPY precision, two concurrent writers, and forced history-insert rollback. Component tests verify that invalid forms do not issue a mutation and that valid submission obtains CSRF before showing success. Live browser review confirmed the current salary/version context and accessible validation without modifying the seeded record.

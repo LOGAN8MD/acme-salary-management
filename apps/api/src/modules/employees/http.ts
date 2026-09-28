@@ -3,6 +3,7 @@ import {
   employeeDirectoryQuerySchema,
   employeeIdSchema,
   salaryHistoryQuerySchema,
+  salaryUpdateInputSchema,
 } from '@acme/contracts';
 import { HttpError } from '../../middleware/errors.js';
 import type { EmployeeService } from './service.js';
@@ -25,6 +26,23 @@ export function createEmployeeRouter(service: EmployeeService) {
     if (!history)
       throw new HttpError(404, 'EMPLOYEE_NOT_FOUND', 'Employee not found.');
     response.json(history);
+  });
+  router.patch('/:employeeId/salary', async (request, response) => {
+    const employeeId = employeeIdSchema.safeParse(request.params.employeeId);
+    const input = salaryUpdateInputSchema.safeParse(request.body);
+    if (!employeeId.success || !input.success)
+      throw new HttpError(
+        400,
+        'VALIDATION_ERROR',
+        'Enter a valid salary amount, reason, and expected version.',
+      );
+    response.json(
+      await service.updateSalary(
+        employeeId.data,
+        response.locals.userId as string,
+        input.data,
+      ),
+    );
   });
   router.get('/:employeeId', async (request, response) => {
     const employeeId = employeeIdSchema.safeParse(request.params.employeeId);

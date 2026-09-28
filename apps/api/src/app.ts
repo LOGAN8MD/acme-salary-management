@@ -42,7 +42,7 @@ export function createApp(options?: {
     );
     app.use(
       '/api/v1/employees',
-      createEmployeeRouter(createEmployeeService(options.db)),
+      createEmployeeRouter(createEmployeeService(options.db, options.now)),
     );
   }
   app.use((_request, response) => {

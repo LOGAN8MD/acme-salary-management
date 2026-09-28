@@ -4,13 +4,17 @@ import {
   employeeDetailResponseSchema,
   employeeFilterOptionsResponseSchema,
   salaryHistoryResponseSchema,
+  salaryUpdateResponseSchema,
   type EmployeeDirectoryQuery,
+  type SalaryUpdateInput,
 } from '@acme/contracts';
+import { ApiError, csrfHeaders } from '../auth/api';
 
-async function request(path: string) {
+async function request(path: string, options?: RequestInit) {
   let response: Response;
   try {
     response = await fetch(`/api/v1/employees${path}`, {
+      ...options,
       credentials: 'same-origin',
       cache: 'no-store',
     });
@@ -19,9 +23,11 @@ async function request(path: string) {
   }
   if (!response.ok) {
     const body = (await response.json().catch(() => null)) as {
-      error?: { message?: string };
+      error?: { code?: string; message?: string };
     } | null;
-    throw new Error(
+    throw new ApiError(
+      response.status,
+      body?.error?.code ?? 'REQUEST_FAILED',
       body?.error?.message ?? 'Unable to load employees. Please try again.',
     );
   }
@@ -75,4 +81,16 @@ export async function fetchSalaryHistory(
   return salaryHistoryResponseSchema.parse(
     await request(`/${employeeId}/salary-history?${params.toString()}`),
   );
+}
+export async function updateEmployeeSalary(
+  employeeId: string,
+  input: SalaryUpdateInput,
+) {
+  return salaryUpdateResponseSchema.parse(
+    await request(`/${employeeId}/salary`, {
+      method: 'PATCH',
+      headers: await csrfHeaders(),
+      body: JSON.stringify(input),
+    }),
+  ).data;
 }

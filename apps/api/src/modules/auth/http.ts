@@ -45,6 +45,7 @@ export function createAuthHttp(service: AuthService, config: AuthConfig) {
         'UNAUTHENTICATED',
         'Please sign in to continue.',
       );
+    response.locals.userId = context(response).session!.user!.id;
     next();
   };
   const requireCsrf: RequestHandler = (request, response, next) => {

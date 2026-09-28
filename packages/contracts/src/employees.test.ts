@@ -3,6 +3,7 @@ import {
   employeeDirectoryQuerySchema,
   employeeIdSchema,
   salaryHistoryQuerySchema,
+  salaryUpdateInputSchema,
 } from './index.js';
 
 describe('employee directory query', () => {
@@ -46,6 +47,46 @@ describe('employee detail queries', () => {
     });
     expect(
       salaryHistoryQuerySchema.safeParse({ pageSize: '101' }).success,
+    ).toBe(false);
+  });
+});
+
+describe('salary update input', () => {
+  it('accepts exact plain decimals and trims the reason', () => {
+    expect(
+      salaryUpdateInputSchema.parse({
+        annualBaseAmount: '1900000.5',
+        reason: '  Promotion review  ',
+        expectedVersion: 2,
+      }),
+    ).toEqual({
+      annualBaseAmount: '1900000.5',
+      reason: 'Promotion review',
+      expectedVersion: 2,
+    });
+  });
+
+  it.each(['0', '-1', '1.234', '1,000', '1e3', '$100', '10000000000000000.00'])(
+    'rejects invalid amount %s',
+    (annualBaseAmount) => {
+      expect(
+        salaryUpdateInputSchema.safeParse({
+          annualBaseAmount,
+          reason: 'Salary review',
+          expectedVersion: 1,
+        }).success,
+      ).toBe(false);
+    },
+  );
+
+  it('rejects unknown mutation fields', () => {
+    expect(
+      salaryUpdateInputSchema.safeParse({
+        annualBaseAmount: '100',
+        reason: 'Salary review',
+        expectedVersion: 1,
+        currencyCode: 'USD',
+      }).success,
     ).toBe(false);
   });
 });

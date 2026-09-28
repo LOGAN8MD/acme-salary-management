@@ -11,6 +11,7 @@ if (
   throw new Error('Use npm run test:db.');
 const db = createDatabaseClient();
 const rawSession = 'a'.repeat(64);
+const rawCsrf = 'b'.repeat(64);
 const firstEmployeeId = '00000000-0000-4000-8000-000000000001';
 let app: ReturnType<typeof createApp>;
 beforeEach(async () => {
@@ -25,7 +26,7 @@ beforeEach(async () => {
   await db.session.create({
     data: {
       tokenHash: tokenHash(rawSession),
-      csrfTokenHash: tokenHash('b'.repeat(64)),
+      csrfTokenHash: tokenHash(rawCsrf),
       userId: user.id,
       expiresAt: new Date('2027-01-01T00:00:00.000Z'),
     },
@@ -129,6 +130,13 @@ const authenticated = () =>
   request(app)
     .get('/api/v1/employees')
     .set('Cookie', `acme-session=${rawSession}`);
+const updateSalary = (body: object, employeeId = firstEmployeeId) =>
+  request(app)
+    .patch(`/api/v1/employees/${employeeId}/salary`)
+    .set('Cookie', `acme-session=${rawSession}`)
+    .set('Origin', 'http://127.0.0.1:5173')
+    .set('X-CSRF-Token', rawCsrf)
+    .send(body);
 
 describe('employee directory', () => {
   it('requires authentication and validates query values', async () => {
@@ -227,5 +235,111 @@ describe('employee directory', () => {
           .set('Cookie', cookie)
       ).status,
     ).toBe(404);
+  });
+
+  it('atomically updates the current salary and appends an attributed revision', async () => {
+    const response = await updateSalary({
+      annualBaseAmount: '1900000.5',
+      reason: '  Promotion review  ',
+      expectedVersion: 2,
+    });
+    expect(response.status).toBe(200);
+    expect(response.body.data).toMatchObject({
+      salary: { annualBaseAmount: '1900000.50', version: 3 },
+      change: {
+        previousAmount: '1800000.00',
+        newAmount: '1900000.50',
+        reason: 'Promotion review',
+        salaryVersion: 3,
+        changedBy: { email: 'directory@example.test' },
+      },
+    });
+    const stored = await db.currentSalary.findUniqueOrThrow({
+      where: { employeeId: firstEmployeeId },
+    });
+    expect(stored.annualBaseAmount.toFixed(2)).toBe('1900000.50');
+    expect(stored.version).toBe(3);
+    expect(
+      await db.salaryChange.count({ where: { employeeId: firstEmployeeId } }),
+    ).toBe(3);
+  });
+
+  it('checks stale versions before unchanged values and enforces currency precision', async () => {
+    const stale = await updateSalary({
+      annualBaseAmount: '1800000',
+      reason: 'Stale review',
+      expectedVersion: 1,
+    });
+    expect(stale.status).toBe(409);
+    expect(stale.body.error.code).toBe('SALARY_VERSION_CONFLICT');
+    const unchanged = await updateSalary({
+      annualBaseAmount: '1800000',
+      reason: 'No actual change',
+      expectedVersion: 2,
+    });
+    expect(unchanged.status).toBe(400);
+    expect(unchanged.body.error.code).toBe('SALARY_UNCHANGED');
+    const jpyEmployeeId = '00000000-0000-4000-8000-000000000002';
+    await db.currentSalary.update({
+      where: { employeeId: jpyEmployeeId },
+      data: { currencyCode: 'JPY', annualBaseAmount: '95000' },
+    });
+    const fractionalJpy = await updateSalary(
+      {
+        annualBaseAmount: '96000.50',
+        reason: 'Currency precision test',
+        expectedVersion: 1,
+      },
+      jpyEmployeeId,
+    );
+    expect(fractionalJpy.status).toBe(400);
+    expect(fractionalJpy.body.error.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('allows only one concurrent writer for an expected version', async () => {
+    const responses = await Promise.all([
+      updateSalary({
+        annualBaseAmount: '1900000',
+        reason: 'First concurrent review',
+        expectedVersion: 2,
+      }),
+      updateSalary({
+        annualBaseAmount: '1950000',
+        reason: 'Second concurrent review',
+        expectedVersion: 2,
+      }),
+    ]);
+    expect(responses.map(({ status }) => status).sort()).toEqual([200, 409]);
+    expect(
+      await db.salaryChange.count({
+        where: { employeeId: firstEmployeeId, salaryVersion: 3 },
+      }),
+    ).toBe(1);
+  });
+
+  it('rolls back the current salary when history insertion fails', async () => {
+    await db.$executeRawUnsafe(`CREATE FUNCTION reject_salary_revision() RETURNS trigger LANGUAGE plpgsql AS $$
+      BEGIN IF NEW.reason = 'Reject history' THEN RAISE EXCEPTION 'Injected history failure'; END IF; RETURN NEW; END $$`);
+    await db.$executeRawUnsafe(
+      'CREATE TRIGGER reject_salary_revision BEFORE INSERT ON salary_changes FOR EACH ROW EXECUTE FUNCTION reject_salary_revision()',
+    );
+    try {
+      const response = await updateSalary({
+        annualBaseAmount: '1900000',
+        reason: 'Reject history',
+        expectedVersion: 2,
+      });
+      expect(response.status).toBe(500);
+      const salary = await db.currentSalary.findUniqueOrThrow({
+        where: { employeeId: firstEmployeeId },
+      });
+      expect(salary.annualBaseAmount.toFixed(2)).toBe('1800000.00');
+      expect(salary.version).toBe(2);
+    } finally {
+      await db.$executeRawUnsafe(
+        'DROP TRIGGER reject_salary_revision ON salary_changes',
+      );
+      await db.$executeRawUnsafe('DROP FUNCTION reject_salary_revision()');
+    }
   });
 });

@@ -125,6 +125,20 @@ export const salaryHistoryResponseSchema = z.strictObject({
   data: z.array(salaryChangeSchema),
   pagination: paginationSchema,
 });
+export const salaryUpdateInputSchema = z.strictObject({
+  annualBaseAmount: z
+    .string()
+    .regex(/^(?:0|[1-9]\d{0,15})(?:\.\d{1,2})?$/)
+    .refine((amount) => /[1-9]/.test(amount), 'Amount must be positive.'),
+  reason: z.string().trim().min(3).max(500),
+  expectedVersion: z.number().int().positive(),
+});
+export const salaryUpdateResponseSchema = z.strictObject({
+  data: z.strictObject({
+    salary: employeeSalarySchema,
+    change: salaryChangeSchema,
+  }),
+});
 export type EmployeeDirectoryQuery = z.infer<
   typeof employeeDirectoryQuerySchema
 >;
@@ -134,3 +148,4 @@ export type EmployeeFilterOptions = z.infer<
 >['data'];
 export type SalaryHistoryQuery = z.infer<typeof salaryHistoryQuerySchema>;
 export type SalaryChange = z.infer<typeof salaryChangeSchema>;
+export type SalaryUpdateInput = z.infer<typeof salaryUpdateInputSchema>;

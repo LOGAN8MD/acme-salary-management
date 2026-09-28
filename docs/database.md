@@ -34,9 +34,9 @@ The helper uses `embedded-postgres` as development tooling (its wrapper is beta;
 
 Foreign keys restrict deletion of referenced records. Database checks reject nonpositive or nonfinite salaries, unsupported currencies, fractional stored JPY values, invalid revision/initial combinations, unchanged revisions, and missing/invalid reasons. SQL checks are kept in a separate migration because Prisma's schema language does not represent them.
 
-PostgreSQL's `NUMERIC(18,2)` rounds excess fractional digits before CHECK evaluation. API validation must reject excessive input precision before writing (Task 9). Tests verify exact retention of supported two-decimal values, including values beyond JavaScript safe-integer precision. Do not convert money to JavaScript numbers.
+PostgreSQL's `NUMERIC(18,2)` rounds excess fractional digits before CHECK evaluation. The Task 9 API rejects excessive precision before writing. Tests verify exact retention of supported two-decimal values, including values beyond JavaScript safe-integer precision. Backend money logic does not convert amounts to JavaScript numbers.
 
-The database enforces **at most one** current salary per employee, not existence of a salary for every employee. Task 4 now creates employees, salaries, and coherent history together in one seed transaction and checks consistency before accepting reruns. Later application updates must enforce cross-row continuity, fixed currency, matching current/history amounts, and append-only behavior in Task 9. These are not database triggers. See [seed behavior](seeding.md).
+The database enforces **at most one** current salary per employee, not existence of a salary for every employee. Task 4 creates employees, salaries, and coherent history together in one seed transaction and checks consistency before accepting reruns. Task 9 enforces fixed currency, expected-version concurrency, matching current/history amounts, and append-only revisions in one transaction. These are not database triggers. See [seed behavior](seeding.md).
 
 ## Migration workflow
 

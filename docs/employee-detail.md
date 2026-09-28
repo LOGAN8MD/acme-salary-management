@@ -1,6 +1,6 @@
 # Employee detail and salary history
 
-Task 8 adds a read-only employee detail page reached from an employee name in the directory.
+Task 8 added an employee detail page reached from an employee name in the directory. Task 9 adds salary revision from its current-salary card.
 
 ## Behavior
 
@@ -11,7 +11,7 @@ Task 8 adds a read-only employee detail page reached from an employee name in th
 - Initial rows are labeled as initialization and show `System initialization` because they have no human actor.
 - Invalid identifiers return `400 VALIDATION_ERROR`; a valid UUID with no employee returns `404 EMPLOYEE_NOT_FOUND`.
 
-The page is read-only. Salary changes are deliberately deferred to Task 9 so validation, concurrency control, and the append-only audit record can be implemented together.
+Profile fields and history remain read-only. Salary revisions use the transactional workflow documented in [salary updates](salary-updates.md).
 
 ## API
 

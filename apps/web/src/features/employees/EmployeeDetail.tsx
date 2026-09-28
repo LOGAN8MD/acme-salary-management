@@ -14,6 +14,7 @@ import { DataTable, type TableColumn } from '../../components/DataTable';
 import { ErrorState, LoadingState } from '../../components/Feedback';
 import { PageHeader } from '../../components/PageHeader';
 import { fetchEmployee, fetchSalaryHistory } from './api';
+import { SalaryUpdateForm } from './SalaryUpdateForm';
 
 function money(amount: string, currency: string) {
   return new Intl.NumberFormat(undefined, {
@@ -110,6 +111,7 @@ export function EmployeeDetail() {
               }).format(new Date(person.salary.updatedAt))}
             </Typography>
           </Stack>
+          <SalaryUpdateForm employee={person} />
         </Paper>
       </Stack>
       <Typography component="h2" variant="h5" sx={{ mb: 2 }}>
