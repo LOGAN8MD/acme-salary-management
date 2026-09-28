@@ -24,7 +24,6 @@ export default defineConfig({
           name: 'contracts',
           environment: 'node',
           include: ['packages/contracts/src/**/*.test.ts'],
-          passWithNoTests: true,
         },
       },
     ],

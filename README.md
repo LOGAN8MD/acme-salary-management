@@ -1,7 +1,7 @@
 # ACME Salary Management
 
 An Incubyte assessment application for managing employee annual base salaries.
-**Current milestone: Task 3 database foundation.** Schema, migrations, and database tests are implemented; employee data and business features are not yet implemented.
+**Current milestone: Task 4 seed dataset.** Schema, migrations, database tests, and a reproducible 10,000-employee seed are implemented. Login and salary-management features are not yet implemented.
 
 ## Local setup
 
@@ -15,7 +15,7 @@ npm run dev
 
 Open http://127.0.0.1:5173 for the React placeholder. The API listens on http://127.0.0.1:3001; `GET /api/v1/status` returns liveness only. The same endpoint is available through the frontend development proxy. Stop both processes with Ctrl+C.
 
-If you change `PORT`, also update `API_PROXY_TARGET`. Keep `HOST=127.0.0.1` for local development. The UI placeholder and liveness API do not require a database. See [database setup](docs/database.md) to start PostgreSQL and apply migrations. Never place secrets in `VITE_` variables because they are exposed to the browser.
+If you change `PORT`, also update `API_PROXY_TARGET`. Keep `HOST=127.0.0.1` for local development. The UI placeholder and liveness API do not require a database. See [database setup](docs/database.md) to start PostgreSQL and apply migrations, then [seeding instructions](docs/seeding.md) to populate the demo dataset. Never place secrets in `VITE_` variables because they are exposed to the browser.
 
 ## Verification
 
@@ -32,7 +32,7 @@ After building, run `npm start -w @acme/api` for the compiled backend, and `npm 
 - `apps/api`: Express application with separate server startup; API tests run without starting the production server.
 - `apps/web`: React/Vite application with Material UI and TanStack Query providers.
 - `packages/contracts`: reserved shared validation package with Zod; no business contracts implemented yet.
-- `prisma`: schema and committed SQL migrations, including custom integrity checks.
+- `prisma`: schema, committed SQL migrations, and seed entry point.
 - `scripts/database.mjs`: persistent local database and isolated integration-test runner.
 - `docs`: requirements, architecture, API contracts, database guide, and actual AI workflow notes.
 - `PROJECT_MEMORY.md`: feature status, approval boundaries, and append-only change history.

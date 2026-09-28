@@ -36,7 +36,7 @@ Foreign keys restrict deletion of referenced records. Database checks reject non
 
 PostgreSQL's `NUMERIC(18,2)` rounds excess fractional digits before CHECK evaluation. API validation must reject excessive input precision before writing (Task 9). Tests verify exact retention of supported two-decimal values, including values beyond JavaScript safe-integer precision. Do not convert money to JavaScript numbers.
 
-The database enforces **at most one** current salary per employee, not existence of a salary for every employee. Task 4 must create employee, current salary, and initial history together. Cross-row continuity, fixed currency across revisions, matching current/history amounts, and append-only application behavior will be enforced by the seed/service transactions in Tasks 4 and 9. They are not represented as database triggers or claimed as implemented services in this task.
+The database enforces **at most one** current salary per employee, not existence of a salary for every employee. Task 4 now creates employees, salaries, and coherent history together in one seed transaction and checks consistency before accepting reruns. Later application updates must enforce cross-row continuity, fixed currency, matching current/history amounts, and append-only behavior in Task 9. These are not database triggers. See [seed behavior](seeding.md).
 
 ## Migration workflow
 
