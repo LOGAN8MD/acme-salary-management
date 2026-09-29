@@ -10,14 +10,14 @@
 - [x] Architecture, API, trade-off, AI-workflow, performance, and deployment artifacts
 - [x] Incremental Git history with one commit per approved implementation milestone
 - [x] Reproducible local WebM demo artifact
-- [ ] Repository pushed and accessible to the review team
-- [ ] Render Blueprint deployed with private secrets and managed PostgreSQL
-- [ ] Public deployment smoke test passed
-- [ ] Demo video uploaded and accessible to the review team
-- [ ] Repository, application, and video URLs inserted below
+- [x] Repository pushed and accessible to the review team
+- [x] Render Blueprint deployed with environment configuration and managed PostgreSQL
+- [x] Public deployment smoke test passed
+- [x] Demo video committed and accessible to the review team
+- [x] Repository, application, and video URLs inserted below
 - [ ] Reply sent in the original recruiter email thread
 
-Never commit or place the hosted password in a public video. Share it through the recruiter's accepted private channel.
+The published credentials are restricted to the synthetic assessment environment. Rotate or remove them when reviewer access is no longer required.
 
 ## Ready-to-send email
 
@@ -27,11 +27,11 @@ Hi,
 
 Thank you for the opportunity. I have completed the Salary Management assessment.
 
-- Repository: `[REPOSITORY_URL]`
-- Deployed application: `[APPLICATION_URL]`
-- Video walkthrough: `[VIDEO_URL]`
+- Repository: https://github.com/LOGAN8MD/acme-salary-management
+- Deployed application: https://acme-salary-management-26x6.onrender.com
+- Video walkthrough: https://github.com/LOGAN8MD/acme-salary-management/blob/main/demo/acme-salary-management-demo.webm
 - Demo user: `hr@acme.example.test`
-- Demo password: `[SHARE PRIVATELY OR INSERT ONLY IN THE PRIVATE EMAIL]`
+- Demo password: `AcmeLocalDemo2026!`
 
 The repository includes the one-page requirements document, architecture and API decisions, test and performance evidence, deployment instructions, and a record of how I used AI during development. The application uses synthetic data for 10,000 employees.
 
