@@ -1,6 +1,6 @@
 # ACME Salary Management — Requirements
 
-**Version:** 1.0 · **Date:** 2026-09-28 · **Status:** Task 1 review draft
+**Version:** 1.0 · **Date:** 2026-09-28 · **Status:** Accepted implementation scope
 
 **Goal and user.** Give ACME’s HR manager a dependable web application to maintain annual base salaries for 10,000 employees across countries and answer basic compensation questions without managing spreadsheets. Success means finding an employee, safely changing a salary, tracing the change, and understanding salary distributions.
 

@@ -6,8 +6,8 @@ import { createServer } from 'node:net';
 import { spawn } from 'node:child_process';
 
 const mode = process.argv[2];
-if (!['e2e', 'performance', 'production'].includes(mode))
-  throw new Error('Use e2e, performance, or production mode.');
+if (!['e2e', 'performance', 'demo', 'production'].includes(mode))
+  throw new Error('Use e2e, performance, demo, or production mode.');
 const root = resolve(import.meta.dirname, '..');
 const databaseDirectory = await mkdtemp(join(tmpdir(), 'acme-quality-db-'));
 const children = [];
@@ -152,6 +152,7 @@ try {
       ['test', '--config', 'playwright.config.ts'],
       env,
     );
+  else if (mode === 'demo') await run('scripts/record-demo.mjs', [], env);
   else if (mode === 'performance')
     await run('scripts/performance.mjs', [], env);
 } finally {

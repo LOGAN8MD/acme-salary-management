@@ -24,6 +24,8 @@
     "test:e2e": "node scripts/quality-environment.mjs e2e",
     "pretest:performance": "npm run quality:prepare",
     "test:performance": "node scripts/quality-environment.mjs performance",
+    "predemo:record": "npm run quality:prepare",
+    "demo:record": "node scripts/quality-environment.mjs demo",
     "pretest:production": "npm run build",
     "test:production": "node scripts/quality-environment.mjs production",
     "test:deployment": "node scripts/smoke-deployment.mjs",

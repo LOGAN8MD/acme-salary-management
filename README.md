@@ -1,7 +1,7 @@
 # ACME Salary Management
 
 An Incubyte assessment application for managing employee annual base salaries.
-**Current milestone: Task 12 production packaging and deployment readiness.** The authenticated workspace provides the 10,000-employee directory, profile/history pages, concurrency-safe salary revisions, and currency-isolated salary summaries. The compiled Node service now serves the React application and API from one production origin, with database readiness checks and repeatable deployment verification.
+**Current milestone: Task 13 final delivery.** The authenticated workspace provides the 10,000-employee directory, profile/history pages, concurrency-safe salary revisions, and currency-isolated salary summaries. The compiled Node service serves the React application and API from one production origin, with database readiness checks and repeatable deployment verification.
 
 ## Local setup
 
@@ -26,6 +26,8 @@ npm run check
 Runs workspace type checks, ESLint, formatting checks, Vitest tests, and production builds. Run `npm run test:db` separately for disposable PostgreSQL migration/constraint tests. Other commands: `npm run test:watch`, `npm run format`, and `npm run build`.
 
 Install the Playwright Chromium runtime once with `npx playwright install chromium`, then run `npm run test:e2e` for the isolated critical browser journey. Run `npm run test:performance` for a reproducible five-concurrent-request measurement against a temporary 10,000-employee database. See [quality verification](docs/quality-verification.md) for scope, latest results, and limitations.
+
+Run `npm run demo:record` to generate a reviewable WebM walkthrough under `.artifacts/demo/`. See the [reviewer guide](docs/reviewer-guide.md), [demo guide](docs/demo-guide.md), and [submission checklist](docs/submission.md) for the final assessment package.
 
 Run `npm run test:production` to build and verify the compiled single-origin application against an isolated seeded database. After a normal build, root `npm start` launches that production service. See [production deployment](docs/deployment.md) for required environment variables, migrations, container use, the Render blueprint, and external smoke testing.
 

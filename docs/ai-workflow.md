@@ -93,3 +93,11 @@ User instruction: `implement task 12`.
 Codex converted the compiled Express service into the production entry point for both API and React assets, added a database-backed readiness endpoint, bounded reverse-proxy configuration, security headers, and startup configuration validation. It added a multi-stage Docker image, a Render Blueprint with pre-deploy migrations and a one-time initial seed hook, and a read-only deployment smoke journey. Official Render documentation was checked for Blueprint fields, Docker services, health checks, private PostgreSQL connections, and Prisma migration placement.
 
 The local production command creates a disposable database, builds the repository, starts only compiled output, and verifies same-origin routing and the HR read journey. No public deployment is claimed because this workspace has no Git remote or hosting credentials; external publication and demo/submission materials remain delivery work.
+
+## Task 13 — Final delivery, demo, and submission
+
+User instruction: `implement task 13`.
+
+Codex audited the implementation against the assessment requirements, corrected stale documentation, and added reviewer and submission guides. It created a reproducible Playwright video workflow rather than recording against mutable local or hosted data: the command provisions an isolated database, seeds the full dataset, performs the primary HR journey, writes a WebM artifact, and removes the temporary database.
+
+External publication is attempted only through available authenticated tooling. Repository, deployment, video-upload, and email statuses are recorded separately so locally completed delivery work is not presented as a public deployment.

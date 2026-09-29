@@ -1,6 +1,6 @@
 # Synthetic assessment dataset
 
-Task 4 added the explicit seed command. Task 5 now provides login; employee APIs and salary editing UI remain pending.
+Task 4 added the explicit seed command. The completed application now uses that dataset for authentication, employee workflows, salary revisions, reporting, browser verification, and the reproducible demo.
 
 ## Run locally
 

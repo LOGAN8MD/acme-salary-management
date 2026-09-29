@@ -78,4 +78,4 @@ The configuration follows Render's official [Blueprint specification](https://re
 
 ## Current release status
 
-The production build, single-origin server, isolated production smoke test, container definition, and Render blueprint are complete. A public service has not been created because this workspace has no Git remote, hosting account credentials, or confirmed public origin. Publishing the repository, creating the hosted resources, recording the public URL, and producing the demo/submission material remain Task 13 delivery work.
+The production build, single-origin server, isolated production smoke test, container definition, Render blueprint, local demo video, and submission material are complete. A public service has not been created because this workspace has no Git remote, authenticated GitHub/Render access, or confirmed public origin. Publishing the repository, creating and verifying the hosted resources, uploading the video, and sending the prepared email remain external Task 13 steps.
