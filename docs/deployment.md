@@ -27,7 +27,7 @@ npm run test:deployment
 | `NODE_ENV`                  | `production`                                                        |
 | `DATABASE_URL`              | Private managed PostgreSQL connection string                        |
 | `APP_ORIGIN`                | Exact public HTTPS origin, with no path or trailing slash           |
-| `HOST`                      | Usually `0.0.0.0` inside the container                              |
+| `HOST`                      | Usually `0.0.0.0` on the hosting service                            |
 | `PORT`                      | Hosting-provider port; defaults to `3001`                           |
 | `TRUST_PROXY_HOPS`          | Number of trusted reverse-proxy hops; the Render blueprint uses `1` |
 | `SEED_HR_PASSWORD`          | Strong secret used only by the explicit production seed command     |
@@ -38,7 +38,7 @@ Do not expose secrets through `VITE_` variables. Proxy trust is deliberately num
 
 ## Database release procedure
 
-Every release runs `npm run db:migrate` before application startup. The application never creates schema or seed data during startup. For the first environment only, run:
+Every release runs `npm run db:migrate` before the Node process starts. The supplied free-tier Render service performs this idempotent command in its platform start command because Render reserves dedicated pre-deploy commands for paid web services. The application code itself never creates schema or seed data during startup. For the first environment only, run:
 
 ```sh
 npm run db:seed:production
@@ -46,36 +46,34 @@ npm run db:seed:production
 
 The production seed imports compiled application code, requires `SEED_HR_PASSWORD`, and has the same safe rerun behavior as the local seed: it accepts the complete known dataset and refuses partial or unrelated data. Do not run it as a routine deploy step after initialization.
 
-Back up the managed database and verify restoration according to the provider's retention plan before a schema release. Migrations are forward-only: if an application release must be rolled back, redeploy the prior image only when its code remains compatible with the migrated schema. Otherwise, issue a reviewed corrective migration; never edit an applied migration.
+Back up the managed database and verify restoration according to the provider's retention plan before a schema release. Migrations are forward-only: if an application release must be rolled back, redeploy the prior commit only when its code remains compatible with the migrated schema. Otherwise, issue a reviewed corrective migration; never edit an applied migration.
 
-## Container
+## Native Node service
 
-Build and run the image locally when Docker is available:
+The production service uses the same Node.js 24 runtime and npm commands as local verification:
 
 ```sh
-docker build -t acme-salary-management .
-docker run --rm -p 3001:10000 \
-  -e PORT=10000 \
-  -e DATABASE_URL='postgresql://...' \
-  -e APP_ORIGIN='https://your-service.example' \
-  -e TRUST_PROXY_HOPS=1 \
-  acme-salary-management
+npm ci --include=dev
+npm run build
+npm prune --omit=dev --ignore-scripts
+npm run db:migrate
+npm start
 ```
 
-The multi-stage image builds the workspaces, prunes development dependencies, runs as the unprivileged Node user, and includes a readiness health check. The repository's CI builds this image on every pull request and push to `main`. Docker is not installed in the development environment used for Task 12, so the image build is delegated to CI rather than claimed as a local result.
+Render supplies `PORT`; the production configuration defaults `HOST` to `0.0.0.0`. The build command installs locked dependencies, builds every workspace, and prunes development dependencies. The start command applies committed migrations before starting the compiled service. Database seeding remains a separate one-time command.
 
 ## Render Blueprint
 
-`render.yaml` defines one Docker web service and one private PostgreSQL database in Singapore. The free plan is selected so importing the blueprint does not silently choose a paid tier; review current capacity and availability limits before using it for a real organization.
+`render.yaml` defines one native Node web service and one private PostgreSQL database in Singapore. The free plan is selected so importing the blueprint does not silently choose a paid tier; review current capacity and availability limits before using it for a real organization.
 
 1. Push the repository to GitHub, GitLab, or Bitbucket.
 2. In Render, create a Blueprint from the repository and review the proposed resources.
 3. Supply `APP_ORIGIN` using the final Render service URL and a strong `SEED_HR_PASSWORD` when prompted.
-4. Let the pre-deploy command apply migrations. The initial-deploy hook seeds the first environment once.
+4. Let the platform start command apply migrations and start the compiled service. The initial-deploy hook seeds the first environment once.
 5. Confirm `/api/v1/health`, then run `npm run test:deployment` with the final URL and password.
 
-The configuration follows Render's official [Blueprint specification](https://render.com/docs/blueprint-spec), [Docker deployment](https://render.com/docs/docker), [health-check](https://render.com/docs/health-checks), and [PostgreSQL connection](https://render.com/docs/postgresql-creating-connecting) guidance. Migration placement follows Render's [Prisma deployment guide](https://render.com/docs/deploy-prisma-orm).
+The configuration follows Render's official [Blueprint specification](https://render.com/docs/blueprint-spec), [native runtime](https://render.com/docs/native-runtimes), [deployment pipeline](https://render.com/docs/deploys), [health-check](https://render.com/docs/health-checks), and [PostgreSQL connection](https://render.com/docs/postgresql-creating-connecting) guidance. Prisma migrations still use the committed `migrate deploy` workflow described in Render's [Prisma deployment guide](https://render.com/docs/deploy-prisma-orm).
 
 ## Current release status
 
-The production build, single-origin server, isolated production smoke test, container definition, Render blueprint, local demo video, and submission material are complete. A public service has not been created because this workspace has no Git remote, authenticated GitHub/Render access, or confirmed public origin. Publishing the repository, creating and verifying the hosted resources, uploading the video, and sending the prepared email remain external Task 13 steps.
+The production build, single-origin server, isolated production smoke test, native Node Render blueprint, local demo video, and submission material are complete. A public service has not been created because this workspace has no Git remote, authenticated GitHub/Render access, or confirmed public origin. Publishing the repository, creating and verifying the hosted resources, uploading the video, and sending the prepared email remain external Task 13 steps.

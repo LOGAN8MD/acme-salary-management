@@ -101,3 +101,9 @@ User instruction: `implement task 13`.
 Codex audited the implementation against the assessment requirements, corrected stale documentation, and added reviewer and submission guides. It created a reproducible Playwright video workflow rather than recording against mutable local or hosted data: the command provisions an isolated database, seeds the full dataset, performs the primary HR journey, writes a WebM artifact, and removes the temporary database.
 
 External publication is attempted only through available authenticated tooling. Repository, deployment, video-upload, and email statuses are recorded separately so locally completed delivery work is not presented as a public deployment.
+
+## Post-Task 13 — Deployment simplification
+
+User instruction: remove Docker after asking whether it was required, followed by explicit `Proceed` approval.
+
+Codex verified that Docker was not an assessment requirement and replaced the container layer with Render's native Node runtime. The production application code remains unchanged. The Blueprint now installs and builds from the lockfile, prunes development dependencies, applies idempotent Prisma migrations in the free service's platform start command, starts the compiled Node service, and retains the one-time initial seed hook. CI continues to exercise standard, database, compiled-production, and browser behavior without a container build.

@@ -20,7 +20,7 @@ npm run test:e2e
 
 The Chromium test signs in, verifies the dashboard population, finds `ACME-000001`, opens the employee, performs a real salary revision, checks the new attributed history row, confirms that the cached report total refreshes, and signs out. It uses accessible roles and labels, checks initial keyboard focus, and verifies route-change heading focus. Failure traces, screenshots, and videos are written under ignored `.artifacts/` paths.
 
-GitHub Actions runs `npm run check`, `npm run test:db`, `npm run test:production`, a Docker image build, and `npm run test:e2e` on pull requests and pushes to `main`. The performance command remains an explicit measurement because shared CI runner results would be noisy and misleading.
+GitHub Actions runs `npm run check`, `npm run test:db`, `npm run test:production`, and `npm run test:e2e` on pull requests and pushes to `main`. The performance command remains an explicit measurement because shared CI runner results would be noisy and misleading.
 
 ## Production and hosted smoke checks
 

@@ -29,7 +29,7 @@ Install the Playwright Chromium runtime once with `npx playwright install chromi
 
 Run `npm run demo:record` to generate a reviewable WebM walkthrough under `.artifacts/demo/`. See the [reviewer guide](docs/reviewer-guide.md), [demo guide](docs/demo-guide.md), and [submission checklist](docs/submission.md) for the final assessment package.
 
-Run `npm run test:production` to build and verify the compiled single-origin application against an isolated seeded database. After a normal build, root `npm start` launches that production service. See [production deployment](docs/deployment.md) for required environment variables, migrations, container use, the Render blueprint, and external smoke testing.
+Run `npm run test:production` to build and verify the compiled single-origin application against an isolated seeded database. After a normal build, root `npm start` launches that production service. See [production deployment](docs/deployment.md) for required environment variables, migrations, the native Node Render blueprint, and external smoke testing.
 
 ## Structure
 
@@ -38,7 +38,7 @@ Run `npm run test:production` to build and verify the compiled single-origin app
 - `packages/contracts`: shared Zod authentication, employee, history, salary-update, and reporting contracts.
 - `prisma`: schema, committed SQL migrations, and seed entry point.
 - `scripts/database.mjs`: persistent local database and isolated integration-test runner.
-- `Dockerfile` and `render.yaml`: reproducible production container and managed-host blueprint.
+- `render.yaml`: native Node web service and managed PostgreSQL deployment blueprint.
 - `e2e`: Playwright critical-journey coverage against an isolated full stack.
 - `docs`: requirements, architecture, API contracts, feature guides, quality evidence, and actual AI workflow notes.
 - `PROJECT_MEMORY.md`: feature status, approval boundaries, and append-only change history.

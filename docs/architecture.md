@@ -19,7 +19,7 @@ flowchart TD
     SEED[Explicit seed command] --> DB
 ```
 
-The production Node service serves the built React assets and `/api/v1` routes. Development uses a frontend proxy to the API. A managed PostgreSQL database stores persistent data independently of application restarts. Task 12 packages this design in Docker and a Render Blueprint; see [production deployment](deployment.md).
+The production Node service serves the built React assets and `/api/v1` routes. Development uses a frontend proxy to the API. A managed PostgreSQL database stores persistent data independently of application restarts. The Render Blueprint deploys the same compiled application with Render's native Node runtime; see [production deployment](deployment.md).
 
 ## Technology decisions
 
@@ -130,7 +130,7 @@ Measure directory/detail/report latency on the seeded dataset, documenting the m
 
 Task 11 implemented the isolated browser journey and repeatable seeded-data measurement. See [quality verification](quality-verification.md) for the method, environment, results, and limits of the local evidence.
 
-Task 12 implemented compiled single-origin serving, database-backed readiness, validated proxy/origin settings, container packaging, and a read-only production smoke test. Public hosting remains delivery work because no provider account or repository remote is connected in this workspace.
+Task 12 implemented compiled single-origin serving, database-backed readiness, validated proxy/origin settings, and a read-only production smoke test. Its original container packaging was subsequently simplified to Render's native Node runtime because the assessment does not require a container. Public hosting remains delivery work because no provider account or repository remote is connected in this workspace.
 
 Use one meaningful commit per completed change or coherent checkpoint. Keep actual AI prompts/decisions and verification evidence as work progresses. Git initialization and the first documentation commit belong to Task 2. The demo should show the main journey and explain currency isolation and stale-edit protection.
 

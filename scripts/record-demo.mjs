@@ -24,9 +24,9 @@ if (!video) throw new Error('Playwright did not create a demo video.');
 const pause = (milliseconds = 900) => page.waitForTimeout(milliseconds);
 const caption = (message) =>
   page.evaluate((text) => {
-    let element = document.querySelector('#assessment-demo-caption');
+    let element = globalThis.document.querySelector('#assessment-demo-caption');
     if (!element) {
-      element = document.createElement('div');
+      element = globalThis.document.createElement('div');
       element.id = 'assessment-demo-caption';
       Object.assign(element.style, {
         position: 'fixed',
@@ -43,7 +43,7 @@ const caption = (message) =>
         font: '600 18px/1.4 system-ui, sans-serif',
         textAlign: 'center',
       });
-      document.body.append(element);
+      globalThis.document.body.append(element);
     }
     element.textContent = text;
   }, message);
