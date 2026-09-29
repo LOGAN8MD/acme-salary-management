@@ -1,7 +1,7 @@
 # ACME Salary Management
 
 An Incubyte assessment application for managing employee annual base salaries.
-**Current milestone: Task 10 salary reporting.** The authenticated workspace provides the 10,000-employee directory, profile/history pages, concurrency-safe salary revisions, and currency-isolated salary summaries grouped by country, department, or job level.
+**Current milestone: Task 11 end-to-end quality verification.** The authenticated workspace provides the 10,000-employee directory, profile/history pages, concurrency-safe salary revisions, and currency-isolated salary summaries. The critical HR journey now runs automatically against an isolated seeded database.
 
 ## Local setup
 
@@ -25,6 +25,8 @@ npm run check
 
 Runs workspace type checks, ESLint, formatting checks, Vitest tests, and production builds. Run `npm run test:db` separately for disposable PostgreSQL migration/constraint tests. Other commands: `npm run test:watch`, `npm run format`, and `npm run build`.
 
+Install the Playwright Chromium runtime once with `npx playwright install chromium`, then run `npm run test:e2e` for the isolated critical browser journey. Run `npm run test:performance` for a reproducible five-concurrent-request measurement against a temporary 10,000-employee database. See [quality verification](docs/quality-verification.md) for scope, latest results, and limitations.
+
 After building, run `npm start -w @acme/api` for the compiled backend, and `npm run preview -w @acme/web` to inspect frontend assets. Frontend preview does not supply an API proxy. Production same-origin serving is planned for deployment, not implemented here.
 
 ## Structure
@@ -34,9 +36,10 @@ After building, run `npm start -w @acme/api` for the compiled backend, and `npm 
 - `packages/contracts`: shared Zod authentication, employee, history, salary-update, and reporting contracts.
 - `prisma`: schema, committed SQL migrations, and seed entry point.
 - `scripts/database.mjs`: persistent local database and isolated integration-test runner.
-- `docs`: requirements, architecture, API contracts, database/auth/layout/directory guides, and actual AI workflow notes.
+- `e2e`: Playwright critical-journey coverage against an isolated full stack.
+- `docs`: requirements, architecture, API contracts, feature guides, quality evidence, and actual AI workflow notes.
 - `PROJECT_MEMORY.md`: feature status, approval boundaries, and append-only change history.
 
-API tests use Vitest and Supertest. React component tests cover session/navigation, directory behavior, employee detail/history, salary updates, and report presentation. Shared-contract tests cover authentication, employee queries, strict salary input, and report parameters/responses. Disposable PostgreSQL tests cover reads, atomic salary/history writes, conflicts/rollback, and currency-isolated report statistics including exact odd/even medians. No coverage percentage claim is made.
+API tests use Vitest and Supertest. React component tests cover session/navigation, directory behavior, employee detail/history, salary updates, and report presentation. Shared-contract tests cover authentication, employee queries, strict salary input, and report parameters/responses. Disposable PostgreSQL tests cover reads, atomic salary/history writes, conflicts/rollback, and currency-isolated report statistics including exact odd/even medians. Playwright covers the complete login-to-update-to-report journey. No coverage percentage claim is made.
 
 Read [requirements](docs/requirements.md), [architecture](docs/architecture.md), and [API design](docs/api-contracts.md) for the intended product. Each later task requires explicit user approval after review of the previous task.

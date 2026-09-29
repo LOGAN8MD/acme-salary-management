@@ -77,3 +77,11 @@ User instruction: `implement task 10`.
 Codex implemented strict report query/response contracts, an authenticated report module, and the protected dashboard. Product decisions keep monetary aggregates within one explicitly selected currency, show the organization-filtered all-currency population separately, and avoid pay-equity conclusions. The API calculates totals, averages, and exact odd/even medians from PostgreSQL decimals, rounds once at display precision, allows only fixed group columns, and reads every report section from one repeatable-read snapshot.
 
 The first database run exposed two integration issues: an older auth test still expected the report route to be absent, and parallel raw statements on one interactive transaction connection stalled an unfiltered report. The implementation now executes those statements sequentially within the same snapshot and handles an empty organization-filter list without calling Prisma's empty SQL join. Disposable tests then verified currency isolation, filters, group ordering, medians, JPY rounding, and empty results. The React dashboard keeps applied filters in the URL and clearly labels which counts include all currencies.
+
+## Task 11 — End-to-end quality and performance verification
+
+User instruction: `implement task 11`.
+
+Codex added Playwright and a dedicated quality runner that creates a temporary PostgreSQL cluster, applies the committed migrations, seeds the full deterministic dataset, and starts the real API and web application on available ports. The browser journey signs in, finds one employee, applies an attributed salary revision, checks history, verifies the report refresh, and signs out. Accessible selectors and focus assertions cover the critical keyboard and labeling behavior. The runner always removes its database, so the test cannot alter local demo data.
+
+A separate repeatable command measured directory, detail, and report HTTP responses through the Vite proxy with five concurrent requests. Each case used five warm-ups and 50 measured samples. On the recorded Apple M4 environment, p95 results were 11.15 ms, 4.25 ms, and 9.78 ms respectively; these are local engineering evidence rather than production guarantees. GitHub Actions now runs standard, database, and browser checks for pull requests and pushes to `main`.

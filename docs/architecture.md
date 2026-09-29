@@ -128,6 +128,8 @@ The seed uses fixed pseudo-random input and a fixed timeline. It creates exactly
 
 Measure directory/detail/report latency on the seeded dataset, documenting the machine, queries, concurrency, and percentile results. A provisional engineering target is p95 below one second for API reads under five concurrent HR sessions, excluding internet latency; this is a target to test, not a measured claim or recruiter requirement.
 
+Task 11 implemented the isolated browser journey and repeatable seeded-data measurement. See [quality verification](quality-verification.md) for the method, environment, results, and limits of the local evidence.
+
 Use one meaningful commit per completed change or coherent checkpoint. Keep actual AI prompts/decisions and verification evidence as work progresses. Git initialization and the first documentation commit belong to Task 2. The demo should show the main journey and explain currency isolation and stale-edit protection.
 
 ## Review points

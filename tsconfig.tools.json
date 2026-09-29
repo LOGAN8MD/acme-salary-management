@@ -10,6 +10,8 @@
     "prisma/seed.ts",
     "prisma.config.ts",
     "vitest.config.ts",
-    "vitest.database.config.ts"
+    "vitest.database.config.ts",
+    "playwright.config.ts",
+    "e2e/**/*.ts"
   ]
 }
