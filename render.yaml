@@ -5,7 +5,7 @@ services:
     plan: free
     region: singapore
     buildCommand: npm ci --include=dev && npm run build && npm prune --omit=dev --ignore-scripts
-    startCommand: npm run db:migrate && npm start
+    startCommand: npm run db:migrate && npm run db:seed:production && npm start
     initialDeployHook: npm run db:seed:production
     healthCheckPath: /api/v1/health
     autoDeployTrigger: checksPass
