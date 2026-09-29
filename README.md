@@ -15,6 +15,17 @@ npm run dev
 
 Open http://127.0.0.1:5173 for the HR login screen. See [authentication review](docs/authentication.md) for demo credentials, [employee directory](docs/employee-directory.md) for search behavior, [employee detail](docs/employee-detail.md) for profile/history behavior, [salary updates](docs/salary-updates.md) for mutation rules, and [salary reporting](docs/salary-reporting.md) for dashboard calculations. The API listens on http://127.0.0.1:3001; `GET /api/v1/status` returns liveness only. The same endpoint is available through the frontend development proxy. Stop both processes with Ctrl+C.
 
+### Demo login
+
+After running the migrations and seed command, sign in with:
+
+```text
+Email: hr@acme.example.test
+Password: AcmeLocalDemo2026!
+```
+
+These credentials are only for the synthetic assessment dataset. The password comes from `SEED_HR_PASSWORD` in the uncommitted `.env`; if that value is changed before the first seed, use the changed value instead.
+
 If you change `PORT`, also update `API_PROXY_TARGET`. Keep `HOST=127.0.0.1` for local development. The API now requires the migrated PostgreSQL database at startup. See [database setup](docs/database.md) to start PostgreSQL and apply migrations, then [seeding instructions](docs/seeding.md) to populate the demo dataset. Never place secrets in `VITE_` variables because they are exposed to the browser.
 
 ## Verification
