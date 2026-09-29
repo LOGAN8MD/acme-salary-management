@@ -3,6 +3,8 @@ import {
   employeeDirectoryQuerySchema,
   employeeIdSchema,
   salaryHistoryQuerySchema,
+  salaryReportQuerySchema,
+  salaryReportResponseSchema,
   salaryUpdateInputSchema,
 } from './index.js';
 
@@ -31,6 +33,55 @@ describe('employee directory query', () => {
         sortBy: 'annualBaseAmount',
       }).success,
     ).toBe(false);
+  });
+});
+
+describe('salary report contracts', () => {
+  it('requires a supported currency, trims filters, and defaults grouping', () => {
+    expect(
+      salaryReportQuerySchema.parse({
+        currencyCode: 'INR',
+        department: '  Engineering  ',
+      }),
+    ).toEqual({
+      currencyCode: 'INR',
+      department: 'Engineering',
+      groupBy: 'department',
+    });
+    expect(salaryReportQuerySchema.safeParse({}).success).toBe(false);
+    expect(
+      salaryReportQuerySchema.safeParse({ currencyCode: 'CAD' }).success,
+    ).toBe(false);
+    expect(
+      salaryReportQuerySchema.safeParse({
+        currencyCode: 'USD',
+        page: '1',
+      }).success,
+    ).toBe(false);
+  });
+
+  it('accepts nullable statistics for an empty selected currency', () => {
+    expect(
+      salaryReportResponseSchema.safeParse({
+        data: {
+          currencyCode: 'GBP',
+          groupBy: 'department',
+          filters: {
+            countryCode: null,
+            department: null,
+            jobLevel: null,
+          },
+          matchingEmployeeCountAllCurrencies: 3,
+          summary: {
+            employeeCount: 0,
+            totalAnnualBaseAmount: '0.00',
+            averageAnnualBaseAmount: null,
+            medianAnnualBaseAmount: null,
+          },
+          groups: [],
+        },
+      }).success,
+    ).toBe(true);
   });
 });
 

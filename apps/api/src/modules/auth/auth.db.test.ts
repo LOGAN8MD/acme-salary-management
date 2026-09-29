@@ -217,7 +217,7 @@ describe('HR authentication', () => {
     expect(malformed.body.error.requestId).toBeTruthy();
     expect(malformed.text).not.toContain('SyntaxError');
   });
-  it('protects business routes and mutation CSRF before route handlers', async () => {
+  it('protects business routes and validates authenticated report requests', async () => {
     expect((await request(app).get('/api/v1/employees')).status).toBe(401);
     expect((await request(app).get('/api/v1/reports/salaries')).status).toBe(
       401,
@@ -228,13 +228,11 @@ describe('HR authentication', () => {
       .set('Cookie', cookie(login));
     expect(directory.status).toBe(200);
     expect(directory.body.pagination.totalItems).toBe(0);
-    expect(
-      (
-        await request(app)
-          .get('/api/v1/reports/salaries')
-          .set('Cookie', cookie(login))
-      ).status,
-    ).toBe(404);
+    const invalidReport = await request(app)
+      .get('/api/v1/reports/salaries')
+      .set('Cookie', cookie(login));
+    expect(invalidReport.status).toBe(400);
+    expect(invalidReport.body.error.code).toBe('VALIDATION_ERROR');
     const blocked = await request(app)
       .patch('/api/v1/employees/example/salary')
       .set('Cookie', cookie(login))

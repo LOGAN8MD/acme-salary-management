@@ -57,4 +57,4 @@ The design follows [OWASP CSRF guidance](https://cheatsheetseries.owasp.org/chea
 
 `npm run test:db` covers the real PostgreSQL auth lifecycle, rotation, hashed storage, restart persistence, expiry, generic credential failures, CSRF/origin rejection, production cookie flags, throttling, input errors, and protected route groups. `npm run check` covers shared contract validation, component interactions, existing unit/API tests, typing, lint, formatting, and builds. Manual browser checks verified login, reload restoration, and logout with the local demo account.
 
-Registration, password reset, SSO, additional roles, and a readiness endpoint remain out of scope. Reporting is not yet implemented. The production build currently emits a chunk-size advisory; review code splitting with the broader frontend work.
+Registration, password reset, SSO, additional roles, and a readiness endpoint remain out of scope. The production build currently emits a chunk-size advisory; review code splitting before deployment.

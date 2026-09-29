@@ -139,6 +139,53 @@ export const salaryUpdateResponseSchema = z.strictObject({
     change: salaryChangeSchema,
   }),
 });
+export const supportedCurrencySchema = z.enum([
+  'INR',
+  'USD',
+  'GBP',
+  'EUR',
+  'JPY',
+]);
+export const salaryReportGroupBySchema = z.enum([
+  'countryCode',
+  'department',
+  'jobLevel',
+]);
+export const salaryReportQuerySchema = z.strictObject({
+  currencyCode: supportedCurrencySchema,
+  countryCode: optionalQueryText(2),
+  department: optionalQueryText(100),
+  jobLevel: optionalQueryText(32),
+  groupBy: salaryReportGroupBySchema.default('department'),
+});
+const salaryReportStatisticsSchema = z.strictObject({
+  employeeCount: z.number().int().nonnegative(),
+  totalAnnualBaseAmount: z.string().regex(/^\d+(?:\.\d{2})?$/),
+  averageAnnualBaseAmount: z
+    .string()
+    .regex(/^\d+(?:\.\d{2})?$/)
+    .nullable(),
+  medianAnnualBaseAmount: z
+    .string()
+    .regex(/^\d+(?:\.\d{2})?$/)
+    .nullable(),
+});
+export const salaryReportResponseSchema = z.strictObject({
+  data: z.strictObject({
+    currencyCode: supportedCurrencySchema,
+    groupBy: salaryReportGroupBySchema,
+    filters: z.strictObject({
+      countryCode: z.string().length(2).nullable(),
+      department: z.string().nullable(),
+      jobLevel: z.string().nullable(),
+    }),
+    matchingEmployeeCountAllCurrencies: z.number().int().nonnegative(),
+    summary: salaryReportStatisticsSchema,
+    groups: z.array(
+      salaryReportStatisticsSchema.extend({ key: z.string().min(1) }),
+    ),
+  }),
+});
 export type EmployeeDirectoryQuery = z.infer<
   typeof employeeDirectoryQuerySchema
 >;
@@ -149,3 +196,5 @@ export type EmployeeFilterOptions = z.infer<
 export type SalaryHistoryQuery = z.infer<typeof salaryHistoryQuerySchema>;
 export type SalaryChange = z.infer<typeof salaryChangeSchema>;
 export type SalaryUpdateInput = z.infer<typeof salaryUpdateInputSchema>;
+export type SalaryReportQuery = z.infer<typeof salaryReportQuerySchema>;
+export type SalaryReport = z.infer<typeof salaryReportResponseSchema>['data'];

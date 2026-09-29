@@ -6,6 +6,8 @@ import { createAuthHttp, type AuthConfig } from './modules/auth/http.js';
 import { errorHandler } from './middleware/errors.js';
 import { createEmployeeService } from './modules/employees/service.js';
 import { createEmployeeRouter } from './modules/employees/http.js';
+import { createReportService } from './modules/reports/service.js';
+import { createReportRouter } from './modules/reports/http.js';
 
 export function createApp(options?: {
   db: PrismaClient;
@@ -43,6 +45,10 @@ export function createApp(options?: {
     app.use(
       '/api/v1/employees',
       createEmployeeRouter(createEmployeeService(options.db, options.now)),
+    );
+    app.use(
+      '/api/v1/reports',
+      createReportRouter(createReportService(options.db)),
     );
   }
   app.use((_request, response) => {

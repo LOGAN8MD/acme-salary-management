@@ -222,4 +222,4 @@ Do not paginate the bounded seed-owned grouping dimensions. Compute all report s
 
 ## Contract verification during implementation
 
-Implemented checks now cover authentication/CSRF failures, malformed directory/detail/history inputs, empty/past-end pagination, unknown employees, deterministic ordering, salary precision, unchanged/stale updates, concurrent writers, and rollback. Currency-isolated report and odd/even median checks remain part of the reporting task.
+Implemented checks cover authentication/CSRF failures, malformed directory/detail/history/report inputs, empty/past-end pagination, unknown employees, deterministic ordering, salary precision, unchanged/stale updates, concurrent writers, rollback, currency-isolated reports, sorted groups, empty report results, and odd/even medians.

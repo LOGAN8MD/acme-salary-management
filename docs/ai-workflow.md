@@ -69,3 +69,11 @@ User instruction: `implement task 9`.
 Codex implemented strict shared mutation contracts, session-derived actor identity, CSRF-protected HTTP handling, and a conditional version update plus history insertion in one Prisma transaction. Validation uses the stored currency, preserves exact decimals, rejects unchanged values, and checks version conflicts before amount equality. The React form shows the version being changed, requires a reason, avoids mutation retries and optimistic success, refreshes affected queries, and distinguishes server rejection from an uncertain connection outcome.
 
 Tests exercise rejected representations, unknown fields, successful exact writes, actor attribution, stale-before-unchanged precedence, JPY precision, two concurrent writers, and forced history-insert rollback. Component tests verify that invalid forms do not issue a mutation and that valid submission obtains CSRF before showing success. Live browser review confirmed the current salary/version context and accessible validation without modifying the seeded record.
+
+## Task 10 — Salary reporting dashboard
+
+User instruction: `implement task 10`.
+
+Codex implemented strict report query/response contracts, an authenticated report module, and the protected dashboard. Product decisions keep monetary aggregates within one explicitly selected currency, show the organization-filtered all-currency population separately, and avoid pay-equity conclusions. The API calculates totals, averages, and exact odd/even medians from PostgreSQL decimals, rounds once at display precision, allows only fixed group columns, and reads every report section from one repeatable-read snapshot.
+
+The first database run exposed two integration issues: an older auth test still expected the report route to be absent, and parallel raw statements on one interactive transaction connection stalled an unfiltered report. The implementation now executes those statements sequentially within the same snapshot and handles an empty organization-filter list without calling Prisma's empty SQL join. Disposable tests then verified currency isolation, filters, group ordering, medians, JPY rounding, and empty results. The React dashboard keeps applied filters in the URL and clearly labels which counts include all currencies.

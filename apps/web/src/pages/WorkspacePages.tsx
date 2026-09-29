@@ -1,29 +1,11 @@
-import { Button, Paper } from '@mui/material';
+import { Button } from '@mui/material';
 import { Link } from 'react-router';
 import { PageHeader } from '../components/PageHeader';
-import { EmptyState } from '../components/Feedback';
 import { EmployeeDirectory } from '../features/employees/EmployeeDirectory';
+import { SalaryDashboard } from '../features/reports/SalaryDashboard';
 
 export function DashboardPage() {
-  return (
-    <>
-      <PageHeader
-        title="Dashboard"
-        description="Understand your organization’s compensation."
-      />
-      <Paper variant="outlined">
-        <EmptyState
-          title="Salary reporting is coming soon"
-          description="Country, department, and job-level summaries will appear here when reporting is available."
-          action={
-            <Button component={Link} to="/employees" variant="outlined">
-              Go to employees
-            </Button>
-          }
-        />
-      </Paper>
-    </>
-  );
+  return <SalaryDashboard />;
 }
 export function EmployeesPage() {
   return <EmployeeDirectory />;
