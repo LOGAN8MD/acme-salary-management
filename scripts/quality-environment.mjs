@@ -6,8 +6,8 @@ import { createServer } from 'node:net';
 import { spawn } from 'node:child_process';
 
 const mode = process.argv[2];
-if (!['e2e', 'performance'].includes(mode))
-  throw new Error('Use e2e or performance mode.');
+if (!['e2e', 'performance', 'production'].includes(mode))
+  throw new Error('Use e2e, performance, or production mode.');
 const root = resolve(import.meta.dirname, '..');
 const databaseDirectory = await mkdtemp(join(tmpdir(), 'acme-quality-db-'));
 const children = [];
@@ -92,6 +92,7 @@ const database = new EmbeddedPostgres({
 const databaseUrl = `postgresql://acme:acme_quality_only@127.0.0.1:${databasePort}/${databaseName}`;
 const webOrigin = `http://127.0.0.1:${webPort}`;
 const apiOrigin = `http://127.0.0.1:${apiPort}`;
+const productionOrigin = 'https://salary.local.test';
 const env = {
   ...process.env,
   DATABASE_URL: databaseUrl,
@@ -99,9 +100,13 @@ const env = {
   SEED_HR_PASSWORD: 'AcmeQualityTest2026!',
   PORT: String(apiPort),
   HOST: '127.0.0.1',
-  APP_ORIGIN: webOrigin,
+  NODE_ENV: mode === 'production' ? 'production' : 'test',
+  APP_ORIGIN: mode === 'production' ? productionOrigin : webOrigin,
   API_PROXY_TARGET: apiOrigin,
   E2E_BASE_URL: webOrigin,
+  DEPLOYMENT_URL: apiOrigin,
+  DEPLOYMENT_ORIGIN: productionOrigin,
+  TRUST_PROXY_HOPS: mode === 'production' ? '1' : '0',
 };
 let databaseStarted = false;
 try {
@@ -110,36 +115,45 @@ try {
   databaseStarted = true;
   await database.createDatabase(databaseName);
   await run('node_modules/prisma/build/index.js', ['migrate', 'deploy'], env);
-  await run('node_modules/tsx/dist/cli.mjs', ['prisma/seed.ts'], env);
+  if (mode === 'production') await run('prisma/seed-production.mjs', [], env);
+  else await run('node_modules/tsx/dist/cli.mjs', ['prisma/seed.ts'], env);
 
   const api = start(
-    'node_modules/tsx/dist/cli.mjs',
-    ['apps/api/src/server.ts'],
+    mode === 'production'
+      ? 'apps/api/dist/server.js'
+      : 'node_modules/tsx/dist/cli.mjs',
+    mode === 'production' ? [] : ['apps/api/src/server.ts'],
     env,
   );
-  const web = start(
-    'node_modules/vite/bin/vite.js',
-    [
-      'apps/web',
-      '--host',
-      '127.0.0.1',
-      '--port',
-      String(webPort),
-      '--strictPort',
-    ],
-    env,
-  );
-  await Promise.all([
-    waitFor(`${apiOrigin}/api/v1/status`, api, 'API'),
-    waitFor(webOrigin, web, 'web application'),
-  ]);
+  if (mode === 'production') {
+    await waitFor(`${apiOrigin}/api/v1/health`, api, 'production application');
+    await run('scripts/smoke-deployment.mjs', [], env);
+  } else {
+    const web = start(
+      'node_modules/vite/bin/vite.js',
+      [
+        'apps/web',
+        '--host',
+        '127.0.0.1',
+        '--port',
+        String(webPort),
+        '--strictPort',
+      ],
+      env,
+    );
+    await Promise.all([
+      waitFor(`${apiOrigin}/api/v1/status`, api, 'API'),
+      waitFor(webOrigin, web, 'web application'),
+    ]);
+  }
   if (mode === 'e2e')
     await run(
       'node_modules/@playwright/test/cli.js',
       ['test', '--config', 'playwright.config.ts'],
       env,
     );
-  else await run('scripts/performance.mjs', [], env);
+  else if (mode === 'performance')
+    await run('scripts/performance.mjs', [], env);
 } finally {
   for (const child of children) {
     if (child.exitCode === null) child.kill('SIGTERM');

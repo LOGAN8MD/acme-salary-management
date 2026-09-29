@@ -26,4 +26,4 @@ Unauthenticated workspace requests redirect to `/login`. After a successful sign
 
 Run `npm run check` from the repository root. Component tests cover protected redirects, safe post-login return, desktop navigation, mobile drawer behavior, sign-out, and shared UI states. Manual browser checks covered direct `/employees` access before and after login, navigation, reload persistence, and desktop/mobile layouts.
 
-The development server handles route fallback. Production hosting must serve the React entry document for unknown non-API paths; that single-origin fallback is part of the later deployment task.
+The development server handles route fallback. The production Node service now serves the React entry document for unknown extensionless, non-API browser paths while preserving 404 responses for missing assets and API routes.

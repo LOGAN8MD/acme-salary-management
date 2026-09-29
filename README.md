@@ -1,7 +1,7 @@
 # ACME Salary Management
 
 An Incubyte assessment application for managing employee annual base salaries.
-**Current milestone: Task 11 end-to-end quality verification.** The authenticated workspace provides the 10,000-employee directory, profile/history pages, concurrency-safe salary revisions, and currency-isolated salary summaries. The critical HR journey now runs automatically against an isolated seeded database.
+**Current milestone: Task 12 production packaging and deployment readiness.** The authenticated workspace provides the 10,000-employee directory, profile/history pages, concurrency-safe salary revisions, and currency-isolated salary summaries. The compiled Node service now serves the React application and API from one production origin, with database readiness checks and repeatable deployment verification.
 
 ## Local setup
 
@@ -27,7 +27,7 @@ Runs workspace type checks, ESLint, formatting checks, Vitest tests, and product
 
 Install the Playwright Chromium runtime once with `npx playwright install chromium`, then run `npm run test:e2e` for the isolated critical browser journey. Run `npm run test:performance` for a reproducible five-concurrent-request measurement against a temporary 10,000-employee database. See [quality verification](docs/quality-verification.md) for scope, latest results, and limitations.
 
-After building, run `npm start -w @acme/api` for the compiled backend, and `npm run preview -w @acme/web` to inspect frontend assets. Frontend preview does not supply an API proxy. Production same-origin serving is planned for deployment, not implemented here.
+Run `npm run test:production` to build and verify the compiled single-origin application against an isolated seeded database. After a normal build, root `npm start` launches that production service. See [production deployment](docs/deployment.md) for required environment variables, migrations, container use, the Render blueprint, and external smoke testing.
 
 ## Structure
 
@@ -36,6 +36,7 @@ After building, run `npm start -w @acme/api` for the compiled backend, and `npm 
 - `packages/contracts`: shared Zod authentication, employee, history, salary-update, and reporting contracts.
 - `prisma`: schema, committed SQL migrations, and seed entry point.
 - `scripts/database.mjs`: persistent local database and isolated integration-test runner.
+- `Dockerfile` and `render.yaml`: reproducible production container and managed-host blueprint.
 - `e2e`: Playwright critical-journey coverage against an isolated full stack.
 - `docs`: requirements, architecture, API contracts, feature guides, quality evidence, and actual AI workflow notes.
 - `PROJECT_MEMORY.md`: feature status, approval boundaries, and append-only change history.

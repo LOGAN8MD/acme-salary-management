@@ -85,3 +85,11 @@ User instruction: `implement task 11`.
 Codex added Playwright and a dedicated quality runner that creates a temporary PostgreSQL cluster, applies the committed migrations, seeds the full deterministic dataset, and starts the real API and web application on available ports. The browser journey signs in, finds one employee, applies an attributed salary revision, checks history, verifies the report refresh, and signs out. Accessible selectors and focus assertions cover the critical keyboard and labeling behavior. The runner always removes its database, so the test cannot alter local demo data.
 
 A separate repeatable command measured directory, detail, and report HTTP responses through the Vite proxy with five concurrent requests. Each case used five warm-ups and 50 measured samples. On the recorded Apple M4 environment, p95 results were 11.15 ms, 4.25 ms, and 9.78 ms respectively; these are local engineering evidence rather than production guarantees. GitHub Actions now runs standard, database, and browser checks for pull requests and pushes to `main`.
+
+## Task 12 — Production packaging and deployment readiness
+
+User instruction: `implement task 12`.
+
+Codex converted the compiled Express service into the production entry point for both API and React assets, added a database-backed readiness endpoint, bounded reverse-proxy configuration, security headers, and startup configuration validation. It added a multi-stage Docker image, a Render Blueprint with pre-deploy migrations and a one-time initial seed hook, and a read-only deployment smoke journey. Official Render documentation was checked for Blueprint fields, Docker services, health checks, private PostgreSQL connections, and Prisma migration placement.
+
+The local production command creates a disposable database, builds the repository, starts only compiled output, and verifies same-origin routing and the HR read journey. No public deployment is claimed because this workspace has no Git remote or hosting credentials; external publication and demo/submission materials remain delivery work.

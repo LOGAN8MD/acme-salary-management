@@ -1,32 +1,21 @@
 import { createApp } from './app.js';
 import { createDatabaseClient } from './db/client.js';
+import { access } from 'node:fs/promises';
+import { join } from 'node:path';
+import { readServerConfig } from './config.js';
 
-const port = Number(process.env.PORT ?? 3001);
-if (!Number.isInteger(port) || port < 1 || port > 65535)
-  throw new Error('PORT must be an integer between 1 and 65535.');
-const host = process.env.HOST ?? '127.0.0.1';
-const secureCookies = process.env.NODE_ENV === 'production';
-const origin =
-  process.env.APP_ORIGIN ?? (secureCookies ? '' : 'http://127.0.0.1:5173');
-const url = new URL(origin);
-if (
-  url.origin !== origin ||
-  !['http:', 'https:'].includes(url.protocol) ||
-  (secureCookies && url.protocol !== 'https:')
-) {
-  throw new Error(
-    'APP_ORIGIN must be an exact origin; production requires HTTPS.',
-  );
-}
+const config = readServerConfig();
+if (config.webDistPath) await access(join(config.webDistPath, 'index.html'));
 const db = createDatabaseClient();
 await db.$connect();
-const server = createApp({ db, auth: { origin, secureCookies } }).listen(
-  port,
-  host,
-  () => {
-    console.info(`API listening on http://${host}:${port}`);
-  },
-);
+const server = createApp({
+  db,
+  auth: { origin: config.origin, secureCookies: config.secureCookies },
+  trustProxyHops: config.trustProxyHops,
+  ...(config.webDistPath ? { webDistPath: config.webDistPath } : {}),
+}).listen(config.port, config.host, () => {
+  console.info(`Application listening on ${config.host}:${config.port}`);
+});
 server.on('error', async (error) => {
   console.error('API failed to start:', error.message);
   await db.$disconnect();

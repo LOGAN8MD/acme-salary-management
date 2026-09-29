@@ -1,6 +1,6 @@
 # ACME Salary Management — Architecture
 
-**Date:** 2026-09-28 · **Status:** Intended architecture; Tasks 1–3 now implemented to their respective scope. See project memory for current feature status.
+**Date:** 2026-09-28 · **Status:** Implemented through Task 12. See project memory for current feature status.
 
 This document describes the intended implementation of [the requirements](requirements.md). [PROJECT_MEMORY.md](../PROJECT_MEMORY.md) records actual feature status, approvals, and history. [API contracts](api-contracts.md) define the initial HTTP interface. Approval to write these documents is not approval to implement later tasks.
 
@@ -19,7 +19,7 @@ flowchart TD
     SEED[Explicit seed command] --> DB
 ```
 
-The production Node service serves the built React assets and `/api/v1` routes. Development uses a frontend proxy to the API. A managed PostgreSQL database stores persistent data independently of application restarts. Hosting provider and dependency versions will be selected and verified during their respective tasks.
+The production Node service serves the built React assets and `/api/v1` routes. Development uses a frontend proxy to the API. A managed PostgreSQL database stores persistent data independently of application restarts. Task 12 packages this design in Docker and a Render Blueprint; see [production deployment](deployment.md).
 
 ## Technology decisions
 
@@ -129,6 +129,8 @@ The seed uses fixed pseudo-random input and a fixed timeline. It creates exactly
 Measure directory/detail/report latency on the seeded dataset, documenting the machine, queries, concurrency, and percentile results. A provisional engineering target is p95 below one second for API reads under five concurrent HR sessions, excluding internet latency; this is a target to test, not a measured claim or recruiter requirement.
 
 Task 11 implemented the isolated browser journey and repeatable seeded-data measurement. See [quality verification](quality-verification.md) for the method, environment, results, and limits of the local evidence.
+
+Task 12 implemented compiled single-origin serving, database-backed readiness, validated proxy/origin settings, container packaging, and a read-only production smoke test. Public hosting remains delivery work because no provider account or repository remote is connected in this workspace.
 
 Use one meaningful commit per completed change or coherent checkpoint. Keep actual AI prompts/decisions and verification evidence as work progresses. Git initialization and the first documentation commit belong to Task 2. The demo should show the main journey and explain currency isolation and stale-edit protection.
 

@@ -49,7 +49,7 @@ Password verification accepts only the seeded scrypt format and fixed work param
 
 Login is limited to 10 requests per IP per 15 minutes, including unsuccessful/invalid submissions. CSRF bootstrap is limited to 60 requests per IP per minute. At most two scrypt verifications run concurrently per application instance to bound memory pressure. Rate-limited responses include `Retry-After`.
 
-Rate counters are in process memory and reset on restart. Proxy trust is intentionally disabled, so forwarded headers cannot spoof client IPs; an eventual trusted deployment proxy needs explicit configuration and possibly shared rate storage before scaling to multiple instances. This is a documented deployment constraint, not a claim of distributed throttling.
+Rate counters are in process memory and reset on restart. `TRUST_PROXY_HOPS` defaults to `0` and must match the known reverse-proxy topology; the Render blueprint uses one trusted hop. Shared rate storage is still required before scaling to multiple application instances. This is a documented deployment constraint, not a claim of distributed throttling.
 
 The design follows [OWASP CSRF guidance](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html) and uses [express-rate-limit](https://github.com/express-rate-limit/express-rate-limit) for request limits.
 
@@ -57,4 +57,4 @@ The design follows [OWASP CSRF guidance](https://cheatsheetseries.owasp.org/chea
 
 `npm run test:db` covers the real PostgreSQL auth lifecycle, rotation, hashed storage, restart persistence, expiry, generic credential failures, CSRF/origin rejection, production cookie flags, throttling, input errors, and protected route groups. `npm run check` covers shared contract validation, component interactions, existing unit/API tests, typing, lint, formatting, and builds. Manual browser checks verified login, reload restoration, and logout with the local demo account.
 
-Registration, password reset, SSO, additional roles, and a readiness endpoint remain out of scope. The production build currently emits a chunk-size advisory; review code splitting before deployment.
+Registration, password reset, SSO, and additional roles remain out of scope. The production build currently emits a chunk-size advisory; route-level code splitting is a later optimization.

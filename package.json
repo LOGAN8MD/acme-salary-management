@@ -11,6 +11,7 @@
     "node": ">=24.4.0 <25"
   },
   "scripts": {
+    "start": "npm start -w @acme/api",
     "dev": "concurrently -k -n api,web \"npm run dev -w @acme/api\" \"npm run dev -w @acme/web\"",
     "build": "npm run build -w @acme/contracts && npm run build -w @acme/api && npm run build -w @acme/web",
     "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tsconfig.tools.json",
@@ -23,6 +24,9 @@
     "test:e2e": "node scripts/quality-environment.mjs e2e",
     "pretest:performance": "npm run quality:prepare",
     "test:performance": "node scripts/quality-environment.mjs performance",
+    "pretest:production": "npm run build",
+    "test:production": "node scripts/quality-environment.mjs production",
+    "test:deployment": "node scripts/smoke-deployment.mjs",
     "test:watch": "vitest",
     "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build",
     "db:generate": "node --env-file-if-exists=.env node_modules/prisma/build/index.js generate",
@@ -33,6 +37,7 @@
     "test:db": "npm run db:generate && node scripts/database.mjs test",
     "postinstall": "npm run db:generate && npm run build -w @acme/contracts",
     "db:seed": "node --env-file-if-exists=.env --import tsx prisma/seed.ts",
+    "db:seed:production": "node prisma/seed-production.mjs",
     "predev": "npm run build -w @acme/contracts",
     "pretypecheck": "npm run build -w @acme/contracts",
     "pretest": "npm run build -w @acme/contracts",
@@ -51,7 +56,6 @@
     "globals": "^17.12.0",
     "jsdom": "^29.1.1",
     "prettier": "^3.9.9",
-    "prisma": "7.10.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.70.1",
     "vitest": "^5.0.2"
@@ -59,5 +63,8 @@
   "overrides": {
     "deepmerge-ts": "8.0.2",
     "mysql2": "3.24.4"
+  },
+  "dependencies": {
+    "prisma": "^7.10.0"
   }
 }

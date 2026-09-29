@@ -1,6 +1,6 @@
 # Quality verification
 
-Task 11 adds a browser-level critical journey, a reproducible performance measurement, and continuous-integration configuration. These checks complement the focused unit, component, contract, and PostgreSQL integration suites; they do not replace them.
+Task 11 adds a browser-level critical journey, a reproducible performance measurement, and continuous-integration configuration. Task 12 adds compiled production-mode and deployment smoke checks. These complement the focused unit, component, contract, and PostgreSQL integration suites; they do not replace them.
 
 ## Isolated test environment
 
@@ -20,7 +20,13 @@ npm run test:e2e
 
 The Chromium test signs in, verifies the dashboard population, finds `ACME-000001`, opens the employee, performs a real salary revision, checks the new attributed history row, confirms that the cached report total refreshes, and signs out. It uses accessible roles and labels, checks initial keyboard focus, and verifies route-change heading focus. Failure traces, screenshots, and videos are written under ignored `.artifacts/` paths.
 
-GitHub Actions runs `npm run check`, `npm run test:db`, and `npm run test:e2e` on pull requests and pushes to `main`. The performance command remains an explicit measurement because shared CI runner results would be noisy and misleading.
+GitHub Actions runs `npm run check`, `npm run test:db`, `npm run test:production`, a Docker image build, and `npm run test:e2e` on pull requests and pushes to `main`. The performance command remains an explicit measurement because shared CI runner results would be noisy and misleading.
+
+## Production and hosted smoke checks
+
+`npm run test:production` builds all workspaces, starts only the compiled Node service, and verifies the production SPA/API behavior against an isolated seeded database. It checks database readiness, security headers, immutable assets, browser-route fallback, login, exact employee lookup, an INR report, and logout. The smoke journey is deliberately read-only.
+
+`npm run test:deployment` runs the same HTTP checks against `DEPLOYMENT_URL`; provide `DEPLOYMENT_SMOKE_PASSWORD` separately. See [production deployment](deployment.md) for configuration and current hosting status.
 
 ## Performance method and result
 
