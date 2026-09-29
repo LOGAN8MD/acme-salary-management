@@ -8,7 +8,6 @@ services:
     startCommand: npm run db:migrate && npm start
     initialDeployHook: npm run db:seed:production
     healthCheckPath: /api/v1/health
-    maxShutdownDelaySeconds: 30
     autoDeployTrigger: checksPass
     envVars:
       - key: NODE_ENV
