@@ -3,6 +3,12 @@
 An Incubyte assessment application for managing employee annual base salaries.
 **Current milestone: Task 13 final delivery.** The authenticated workspace provides the 10,000-employee directory, profile/history pages, concurrency-safe salary revisions, and currency-isolated salary summaries. The compiled Node service serves the React application and API from one production origin, with database readiness checks and repeatable deployment verification.
 
+## Demo video
+
+[Watch or download the ACME Salary Management demo](demo/acme-salary-management-demo.webm).
+
+The captioned walkthrough demonstrates the reporting dashboard, employee search, salary revision and history, and refreshed salary reporting.
+
 ## Local setup
 
 Use Node.js 24 (see `.nvmrc`) and npm 11. From the repository root:
