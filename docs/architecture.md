@@ -1,8 +1,8 @@
 # ACME Salary Management — Architecture
 
-**Date:** 2026-09-28 · **Status:** Implemented through Task 12. See project memory for current feature status.
+**Date:** 2026-09-28 · **Status:** Implemented through Task 12.
 
-This document describes the intended implementation of [the requirements](requirements.md). [PROJECT_MEMORY.md](../PROJECT_MEMORY.md) records actual feature status, approvals, and history. [API contracts](api-contracts.md) define the initial HTTP interface. Approval to write these documents is not approval to implement later tasks.
+This document describes the implementation of [the requirements](requirements.md). [API contracts](api-contracts.md) define the HTTP interface, and [AI workflow evidence](ai-workflow.md) records how the solution evolved.
 
 ## Application boundaries
 
@@ -58,7 +58,6 @@ docs/
   requirements.md
   architecture.md
   api-contracts.md
-PROJECT_MEMORY.md
 ```
 
 Each API module separates HTTP handlers, service logic, and database queries where needed. Salary arithmetic uses decimal operations rather than JavaScript floating-point arithmetic. The frontend formats decimal strings without altering the persisted amount.

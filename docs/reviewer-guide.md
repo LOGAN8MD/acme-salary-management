@@ -53,4 +53,4 @@ The database, browser, and production checks create isolated PostgreSQL clusters
 - Ten thousand employees are served through indexed, paginated database queries; a distributed architecture would add cost without solving a current need.
 - Migrations and the explicit safe seed remain separate from application startup.
 
-The concise product scope and exclusions are in [requirements](requirements.md). Architectural reasoning, API contracts, actual AI usage, and the append-only implementation history are in [architecture](architecture.md), [API contracts](api-contracts.md), [AI workflow](ai-workflow.md), and [project memory](../PROJECT_MEMORY.md).
+The concise product scope and exclusions are in [requirements](requirements.md). Architectural reasoning, API contracts, and actual AI usage are in [architecture](architecture.md), [API contracts](api-contracts.md), and [AI workflow](ai-workflow.md).

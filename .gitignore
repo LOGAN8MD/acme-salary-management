@@ -11,3 +11,4 @@ apps/api/src/generated/
 .artifacts/
 playwright-report/
 test-results/
+PROJECT_MEMORY.md

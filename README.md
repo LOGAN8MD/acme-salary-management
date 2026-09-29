@@ -52,7 +52,6 @@ Run `npm run test:production` to build and verify the compiled single-origin app
 - `render.yaml`: native Node web service and managed PostgreSQL deployment blueprint.
 - `e2e`: Playwright critical-journey coverage against an isolated full stack.
 - `docs`: requirements, architecture, API contracts, feature guides, quality evidence, and actual AI workflow notes.
-- `PROJECT_MEMORY.md`: feature status, approval boundaries, and append-only change history.
 
 API tests use Vitest and Supertest. React component tests cover session/navigation, directory behavior, employee detail/history, salary updates, and report presentation. Shared-contract tests cover authentication, employee queries, strict salary input, and report parameters/responses. Disposable PostgreSQL tests cover reads, atomic salary/history writes, conflicts/rollback, and currency-isolated report statistics including exact odd/even medians. Playwright covers the complete login-to-update-to-report journey. No coverage percentage claim is made.
 
